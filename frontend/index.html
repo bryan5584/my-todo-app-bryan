@@ -3,28 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Super To-Do List (Projet JS)</title>
+    <title>Ma To-Do List</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Ma To-Do List</h1>
-        </header>
+    <header>
+        <h1>Ma To-Do List</h1>
+        <div class="language-selector">
+            <label for="language-select">Langue:</label>
+            <select id="language-select">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Português</option>
+                <option value="zh">中文 (Chinese)</option>
+                <option value="ja">日本語 (Japanese)</option>
+            </select>
+        </div>
+    </header>
 
-        <main>
-            <form id="addTaskForm" action="/api/tasks" method="post">
-                <input type="text" name="content" placeholder="Ajouter une nouvelle tâche..." aria-label="Nouvelle tâche" required>
-                <input type="date" name="dueDate" aria-label="Date d'échéance">
-                <button type="submit" aria-label="Ajouter la tâche">Ajouter</button>
-            </form>
-
-            <ul id="taskList" role="list">
-                <p id="noTasksMessage" style="text-align: center; color: #666; margin-top: 20px; display: none;">Pas encore de tâches. Ajoutez-en une !</p>
+    <main>
+        <form id="addTaskForm">
+            <input type="text" placeholder="Ajouter une nouvelle tâche..." required>
+            <input type="date">
+            <button type="submit">Ajouter</button>
+        </form>
+        <div id="noTasksMessage" class="hidden">Aucune tâche pour le moment.</div>
+        <ul id="taskList">
             </ul>
-        </main>
-    </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Ma To-Do List</p>
+    </footer>
 
     <script src="app.js"></script>
 </body>

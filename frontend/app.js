@@ -1,4 +1,4 @@
-// Code JavaScript pour le front-end de l'application To-Do List
+// Code JavaScript pour le front-end de l'application To-Do List (avec i18n)
 
 document.addEventListener('DOMContentLoaded', () => {
     const addTaskForm = document.getElementById('addTaskForm');
@@ -6,8 +6,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const dueDateInput = document.querySelector('#addTaskForm input[type="date"]');
     const taskList = document.getElementById('taskList');
     const noTasksMessage = document.getElementById('noTasksMessage');
+    const languageSelect = document.getElementById('language-select'); // Le nouveau sélecteur de langue
 
-    // --- NOUVEAUX ÉLÉMENTS POUR LA MODALE ---
+    let translations = {}; // Objet pour stocker les traductions chargées
+    let currentLang = localStorage.getItem('lang') || 'fr'; // Langue par défaut ou celle enregistrée
+
+    // --- NOUVELLES FONCTIONS D'INTERNATIONALISATION ---
+
+    // Fonction pour charger les fichiers de traduction
+    async function loadTranslations(lang) {
+        try {
+            const response = await fetch(`./locales/${lang}.json`);
+            if (!response.ok) {
+                throw new Error(`Failed to load translation for ${lang}`);
+            }
+            translations = await response.json();
+            localStorage.setItem('lang', lang); // Sauvegarde la langue dans le localStorage
+            applyTranslations(); // Applique les traductions après chargement
+            // Met à jour le sélecteur de langue pour correspondre à la langue chargée
+            languageSelect.value = lang; 
+        } catch (error) {
+            console.error('Error loading translations:', error);
+            // Fallback to default if loading fails
+            if (lang !== 'en') { // Prevent infinite loop if 'en' also fails
+                loadTranslations('en'); // Try English as a fallback
+            }
+        }
+    }
+
+    // Fonction pour traduire un texte donné
+    function translateText(key) {
+        return translations[key] || `[${key}]`; // Retourne la traduction ou la clé si non trouvée
+    }
+
+    // Fonction pour appliquer toutes les traductions à l'interface
+    function applyTranslations() {
+        document.querySelector('header h1').textContent = translateText('appTitle');
+        taskInput.placeholder = translateText('addTaskPlaceholder');
+        dueDateInput.placeholder = translateText('dueDatePlaceholder');
+        document.querySelector('#addTaskForm button[type="submit"]').textContent = translateText('addButton');
+        noTasksMessage.textContent = translateText('noTasksMessage');
+
+        // Modale
+        modal.querySelector('h2').textContent = translateText('taskDetailsTitle');
+        modal.querySelector('label[for="modal-task-title"]').textContent = translateText('titleLabel');
+        modal.querySelector('label[for="modal-task-description"]').textContent = translateText('descriptionLabel');
+        modal.querySelector('#modal-task-description').placeholder = translateText('descriptionPlaceholder');
+        modal.querySelector('label[for="modal-task-due-date"]').textContent = translateText('dueDateLabel');
+        modal.querySelector('label[for="modal-task-priority"]').textContent = translateText('priorityLabel');
+        modal.querySelector('#modal-task-priority option[value="Aucune"]').textContent = translateText('priorityNone');
+        modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
+        modal.querySelector('#modal-task-priority option[value="Moyenne"]').textContent = translateText('priorityMedium');
+        modal.querySelector('#modal-task-priority option[value="Haute"]').textContent = translateText('priorityHigh');
+        saveTaskDetailsButton.textContent = translateText('saveButton');
+
+        // Met à jour les options du sélecteur de langue
+        languageSelect.querySelector('option[value="fr"]').textContent = translateText('languageFrench');
+        languageSelect.querySelector('option[value="en"]').textContent = translateText('languageEnglish');
+        languageSelect.querySelector('option[value="de"]').textContent = translateText('languageGerman');
+        // S'assurer que la langue sélectionnée est la bonne
+        languageSelect.value = currentLang;
+
+        // Re-rendre les tâches pour qu'elles aient les nouveaux textes (priorité, date, boutons)
+        fetchTasks();
+    }
+
+    // Gère le changement de langue
+    languageSelect.addEventListener('change', (e) => {
+        currentLang = e.target.value;
+        loadTranslations(currentLang);
+    });
+
+    // --- FIN NOUVELLES FONCTIONS D'INTERNATIONALISATION ---
+
+
+    // --- ÉLÉMENTS DE LA MODALE EXISTANTS ---
     const modal = document.createElement('div');
     modal.classList.add('modal');
     modal.innerHTML = `
@@ -68,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newPriority = modalTaskPriority.value;
 
             if (!newContent) {
-                alert("Le titre de la tâche ne peut pas être vide !");
+                alert(translateText('taskTitleEmptyAlert')); // TRADUIT ICI
                 return;
             }
 
@@ -76,8 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`/api/tasks/${currentEditingTask.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        content: newContent, 
+                    body: JSON.stringify({
+                        content: newContent,
                         description: newDescription || null,
                         dueDate: newDueDate || null,
                         priority: newPriority
@@ -94,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    // --- FIN NOUVEAUX ÉLÉMENTS POUR LA MODALE ---
 
 
     // Fonction pour charger et afficher les tâches
@@ -136,7 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erreur lors de la récupération des tâches:', error);
             noTasksMessage.style.display = 'block';
-            noTasksMessage.textContent = 'Erreur de chargement des tâches.';
+            noTasksMessage.textContent = translateText('noTasksMessage'); // TRADUIT ICI
+            noTasksMessage.textContent = 'Erreur de chargement des tâches.'; // Ceci sera écrasé par la ligne au-dessus si la traduction existe
         }
     }
 
@@ -154,43 +227,99 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskTextSpan = document.createElement('span');
         taskTextSpan.textContent = task.content;
         taskTextSpan.classList.add('task-text'); // Ajout d'une classe pour styliser le texte de la tâche si besoin
+
+        // --- NOUVELLE LOGIQUE (CORRIGÉE): Édition inline du texte de la tâche ---
+        taskTextSpan.contentEditable = "true"; // Rend le span éditable
+        taskTextSpan.setAttribute('role', 'textbox'); // Améliore l'accessibilité
+        taskTextSpan.setAttribute('aria-label', `${translateText('titleLabel')} ${task.content}`); // TRADUIT ICI
+        taskTextSpan.title = translateText('doubleClickToEdit'); // TRADUIT ICI
+
+        // **MODIFICATION ICI : CENTRALISATION DE L'OUVERTURE DE LA MODALE**
+        // Un seul clic sur le titre de la tâche ouvre la modale pour l'édition complète.
+        taskTextSpan.addEventListener('click', (e) => {
+            // Empêche l'ouverture de la modale si l'utilisateur est déjà en train d'éditer le texte en ligne
+            if (document.activeElement === taskTextSpan) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+            // Sinon, ouvre la modale
+            currentEditingTask = task;
+            modalTaskTitle.value = task.content;
+            modalTaskDescription.value = task.description || '';
+            modalTaskDueDate.value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
+            modalTaskPriority.value = task.priority || 'Aucune';
+            // Met à jour le texte affiché dans la modale en fonction de la traduction
+            modal.querySelector('#modal-task-priority option[value="Aucune"]').textContent = translateText('priorityNone');
+            modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
+            modal.querySelector('#modal-task-priority option[value="Moyenne"]').textContent = translateText('priorityMedium');
+            modal.querySelector('#modal-task-priority option[value="Haute"]').textContent = translateText('priorityHigh');
+            modal.style.display = 'block';
+        });
+
+        taskTextSpan.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            taskTextSpan.focus();
+            const range = document.createRange();
+            range.selectNodeContents(taskTextSpan);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        });
+
+
+        taskTextSpan.addEventListener('blur', async () => {
+            const newContent = taskTextSpan.textContent.trim();
+            // **MODIFICATION ICI : Appeler la route PUT avec l'ID de la tâche**
+            if (newContent !== task.content && newContent !== '') {
+                try {
+                    const response = await fetch(`/api/tasks/${task.id}`, { // S'assure que l'ID est utilisé
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: newContent })
+                    });
+                    if (response.ok) {
+                        task.content = newContent; // Met à jour l'objet tâche localement
+                        fetchTasks(); // Rafraîchit l'affichage pour s'assurer de la cohérence et du tri
+                    } else {
+                        taskTextSpan.textContent = task.content;
+                        console.error('Erreur lors de la mise à jour du titre:', response.statusText);
+                    }
+                } catch (error) {
+                    taskTextSpan.textContent = task.content;
+                    console.error('Erreur réseau lors de la mise à jour du titre:', error);
+                }
+            } else if (newContent === '') {
+                taskTextSpan.textContent = task.content;
+                alert(translateText('taskTitleEmptyAlert'));
+            }
+        });
+
+        taskTextSpan.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                taskTextSpan.blur();
+            }
+        });
+        // --- FIN NOUVELLE LOGIQUE (CORRIGÉE): Édition inline du texte de la tâche ---
+
         taskContentWrapper.appendChild(taskTextSpan);
 
-        // --- NOUVEAU : Affichage de la priorité ---
+        // --- Affichage de la priorité (MAJ pour i18n) ---
         const prioritySpan = document.createElement('span');
-        prioritySpan.textContent = `Priorité: ${task.priority || 'Aucune'}`;
+        prioritySpan.textContent = `${translateText('priorityLabel')} ${translateText('priority' + (task.priority || 'Aucune'))}`;
         prioritySpan.classList.add('task-priority');
-        prioritySpan.classList.add(`priority-${(task.priority || 'Aucune').toLowerCase()}`); // Ajoute une classe pour la couleur
+        prioritySpan.classList.add(`priority-${(task.priority || 'Aucune').toLowerCase()}`);
         taskContentWrapper.appendChild(prioritySpan);
-        // --- FIN NOUVEAU ---
 
-        // Rendre le texte de la tâche et la priorité cliquables pour ouvrir la modale
-        taskTextSpan.style.cursor = 'pointer';
-        taskTextSpan.title = "Cliquer pour voir les détails de la tâche";
-        taskTextSpan.addEventListener('click', () => {
-            currentEditingTask = task;
-            modalTaskTitle.value = task.content;
-            modalTaskDescription.value = task.description || '';
-            modalTaskDueDate.value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
-            modalTaskPriority.value = task.priority || 'Aucune';
-            modal.style.display = 'block';
-        });
+        // **MODIFICATION ICI : SUPPRESSION DE L'ÉCOUTEUR DE CLIC SUR prioritySpan**
+        // L'édition de la priorité se fera via la modale, ouverte par le clic sur le titre.
+        // prioritySpan.style.cursor = 'pointer'; // Plus besoin de pointer de souris spécifique si on ne clique pas
+        // prioritySpan.title = translateText('clickToEditPriority'); // Plus besoin
+        // prioritySpan.addEventListener('click', () => { ... }); // Supprimer tout ce bloc
 
-        // Même pour la priorité (si tu veux qu'un clic sur la priorité ouvre la modale aussi)
-        prioritySpan.style.cursor = 'pointer';
-        prioritySpan.title = "Cliquer pour modifier la priorité";
-        prioritySpan.addEventListener('click', () => {
-            currentEditingTask = task;
-            modalTaskTitle.value = task.content;
-            modalTaskDescription.value = task.description || '';
-            modalTaskDueDate.value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
-            modalTaskPriority.value = task.priority || 'Aucune';
-            modal.style.display = 'block';
-            modalTaskPriority.focus();
-        });
-
-
-        // LOGIQUE POUR LA DATE ET LA COULEUR
+        // LOGIQUE POUR LA DATE ET LA COULEUR (MAJ pour i18n)
         const dueDateContainer = document.createElement('span');
         dueDateContainer.classList.add('due-date-container');
 
@@ -204,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             oneWeekLater.setHours(0, 0, 0, 0);
 
             const dueDateSpan = document.createElement('span');
-            dueDateSpan.textContent = `Échéance: ${dueDateObj.toLocaleDateString('fr-FR')}`;
+            dueDateSpan.textContent = `${translateText('dueDateDisplay')} ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
             dueDateSpan.classList.add('due-date');
 
             if (dueDateObj < today) {
@@ -216,35 +345,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             dueDateContainer.appendChild(dueDateSpan);
 
-            // Rendre le span de date cliquable pour ouvrir la modale
-            dueDateSpan.style.cursor = 'pointer';
-            dueDateSpan.title = "Cliquer pour modifier la date d'échéance";
-            dueDateSpan.addEventListener('click', () => {
-                currentEditingTask = task;
-                modalTaskTitle.value = task.content;
-                modalTaskDescription.value = task.description || '';
-                modalTaskDueDate.value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
-                modalTaskPriority.value = task.priority || 'Aucune';
-                modal.style.display = 'block';
-                modalTaskDueDate.focus();
-            });
+            // **MODIFICATION ICI : Supprimer l'écouteur de clic sur dueDateSpan**
+            // L'édition de la date se fera via la modale, ouverte par le clic sur le titre.
+            // dueDateSpan.style.cursor = 'pointer'; // Plus besoin
+            // dueDateSpan.title = translateText('clickToEditDueDate'); // Plus besoin
+            // dueDateSpan.addEventListener('click', () => { ... }); // Supprimer tout ce bloc
 
         } else {
-            // Message cliquable pour ajouter une date si la tâche n'en a pas
             const addDateSpan = document.createElement('span');
-            addDateSpan.textContent = "Ajouter une date d'échéance";
+            addDateSpan.textContent = translateText('addDueDatePlaceholder'); // TRADUIT ICI
             addDateSpan.classList.add('add-date-placeholder');
-            addDateSpan.style.cursor = 'pointer';
-            addDateSpan.title = "Cliquer pour ajouter une date d'échéance";
-            addDateSpan.addEventListener('click', () => {
-                currentEditingTask = task;
-                modalTaskTitle.value = task.content;
-                modalTaskDescription.value = task.description || '';
-                modalTaskDueDate.value = '';
-                modalTaskPriority.value = task.priority || 'Aucune';
-                modal.style.display = 'block';
-                modalTaskDueDate.focus();
-            });
+            // **MODIFICATION ICI : Supprimer l'écouteur de clic sur addDateSpan**
+            // L'ajout/édition de la date se fera via la modale, ouverte par le clic sur le titre.
+            // addDateSpan.style.cursor = 'pointer'; // Plus besoin
+            // addDateSpan.title = translateText('clickToEditDueDate'); // Plus besoin
+            // addDateSpan.addEventListener('click', () => { ... }); // Supprimer tout ce bloc
             dueDateContainer.appendChild(addDateSpan);
         }
         taskContentWrapper.appendChild(dueDateContainer);
@@ -254,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actionsDiv.classList.add('actions');
 
         const completeButton = document.createElement('button');
-        completeButton.textContent = task.done ? 'Annuler' : 'Fait';
+        completeButton.textContent = task.done ? translateText('undoCompleteButton') : translateText('completeButton'); // TRADUIT ICI
         completeButton.classList.add('complete');
         completeButton.addEventListener('click', async () => {
             const response = await fetch(`/api/tasks/${task.id}`, {
@@ -270,10 +385,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
+        deleteButton.textContent = translateText('deleteButton'); // TRADUIT ICI
         deleteButton.classList.add('delete');
         deleteButton.addEventListener('click', async () => {
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
+            if (confirm(translateText('confirmDelete'))) { // TRADUIT ICI
                 const response = await fetch(`/api/tasks/${task.id}`, {
                     method: 'DELETE'
                 });
@@ -297,18 +412,18 @@ document.addEventListener('DOMContentLoaded', () => {
     addTaskForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const content = taskInput.value.trim();
-        const dueDate = dueDateInput.value; 
+        const dueDate = dueDateInput.value;
 
         if (content) {
             try {
                 const response = await fetch('/api/tasks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: content, dueDate: dueDate }) 
+                    body: JSON.stringify({ content: content, dueDate: dueDate })
                 });
                 if (response.ok) {
                     taskInput.value = '';
-                    dueDateInput.value = ''; 
+                    dueDateInput.value = '';
                     fetchTasks();
                 } else {
                     console.error('Erreur lors de l\'ajout de la tâche:', response.statusText);
@@ -319,6 +434,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Charge les tâches au démarrage de la page
-    fetchTasks();
+    // Initialisation : charge les traductions et les tâches au démarrage
+    loadTranslations(currentLang);
 });
