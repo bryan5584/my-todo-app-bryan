@@ -313,53 +313,43 @@ document.addEventListener('DOMContentLoaded', () => {
         prioritySpan.classList.add(`priority-${(task.priority || 'Aucune').toLowerCase()}`);
         taskContentWrapper.appendChild(prioritySpan);
 
-        // **MODIFICATION ICI : SUPPRESSION DE L'ÉCOUTEUR DE CLIC SUR prioritySpan**
-        // L'édition de la priorité se fera via la modale, ouverte par le clic sur le titre.
-        // prioritySpan.style.cursor = 'pointer'; // Plus besoin de pointer de souris spécifique si on ne clique pas
-        // prioritySpan.title = translateText('clickToEditPriority'); // Plus besoin
-        // prioritySpan.addEventListener('click', () => { ... }); // Supprimer tout ce bloc
-
-        // LOGIQUE POUR LA DATE ET LA COULEUR (MAJ pour i18n)
+        // LOGIQUE POUR LA DATE ET LA COULEUR (MAJ pour i18n et couleurs spécifiques)
         const dueDateContainer = document.createElement('span');
         dueDateContainer.classList.add('due-date-container');
 
         if (task.dueDate) {
             const dueDateObj = new Date(task.dueDate);
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0); // Réinitialise les heures pour comparer uniquement les jours
 
             const oneWeekLater = new Date(today);
             oneWeekLater.setDate(today.getDate() + 7);
-            oneWeekLater.setHours(0, 0, 0, 0);
+            oneWeekLater.setHours(0, 0, 0, 0); // Réinitialise les heures
 
             const dueDateSpan = document.createElement('span');
-            dueDateSpan.textContent = `${translateText('dueDateDisplay')} ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
             dueDateSpan.classList.add('due-date');
 
+            // Nouvelle logique de couleur et de texte pour la date d'échéance
             if (dueDateObj < today) {
+                // Tâche en retard (date passée) - ROUGE
+                dueDateSpan.textContent = translateText('overdueTask') + `: ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
                 dueDateSpan.classList.add('overdue');
             } else if (dueDateObj <= oneWeekLater) {
+                // Tâche dans la semaine à venir (proche) - ORANGE/JAUNE
+                dueDateSpan.textContent = `${translateText('dueDateDisplay')} ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
                 dueDateSpan.classList.add('soon-due');
             } else {
+                // Tâche plus lointaine (plus d'une semaine) - VERT
+                dueDateSpan.textContent = `${translateText('dueDateDisplay')} ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
                 dueDateSpan.classList.add('long-term');
             }
             dueDateContainer.appendChild(dueDateSpan);
 
-            // **MODIFICATION ICI : Supprimer l'écouteur de clic sur dueDateSpan**
-            // L'édition de la date se fera via la modale, ouverte par le clic sur le titre.
-            // dueDateSpan.style.cursor = 'pointer'; // Plus besoin
-            // dueDateSpan.title = translateText('clickToEditDueDate'); // Plus besoin
-            // dueDateSpan.addEventListener('click', () => { ... }); // Supprimer tout ce bloc
-
         } else {
+            // Tâche sans date d'échéance (gris/normal)
             const addDateSpan = document.createElement('span');
-            addDateSpan.textContent = translateText('addDueDatePlaceholder'); // TRADUIT ICI
+            addDateSpan.textContent = translateText('addDueDatePlaceholder');
             addDateSpan.classList.add('add-date-placeholder');
-            // **MODIFICATION ICI : Supprimer l'écouteur de clic sur addDateSpan**
-            // L'ajout/édition de la date se fera via la modale, ouverte par le clic sur le titre.
-            // addDateSpan.style.cursor = 'pointer'; // Plus besoin
-            // addDateSpan.title = translateText('clickToEditDueDate'); // Plus besoin
-            // addDateSpan.addEventListener('click', () => { ... }); // Supprimer tout ce bloc
             dueDateContainer.appendChild(addDateSpan);
         }
         taskContentWrapper.appendChild(dueDateContainer);

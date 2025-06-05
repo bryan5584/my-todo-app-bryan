@@ -126,7 +126,8 @@ li.done .actions button.complete {
     margin-right: 10px;
     word-break: break-word;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Garde la disposition en colonne */
+    align-items: flex-start; /* Aligne les éléments à gauche */
 }
 
 /* Style pour le texte de la tâche */
@@ -167,35 +168,44 @@ li.done .actions button.complete {
 
 
 /* Conteneur pour la date, pour un alignement propre */
-.task-content .due-date-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 5px;
+/* Remarque: Avec task-content en flex-direction: column, il est déjà bien positionné */
+.due-date-container {
+    margin-top: 5px; /* Petit espace au-dessus de la date */
 }
 
-.task-content .due-date {
+.due-date {
     font-size: 0.85em;
-    font-style: italic;
+    padding: 3px 6px;
+    border-radius: 4px;
     font-weight: bold;
+    display: inline-block;
 }
 
-/* Date dans longtemps (gris) */
-.task-content .due-date.long-term {
-    color: var(--subtle-text);
+/* --- NOUVEAUX STYLES POUR LES COULEURS DE DATES --- */
+
+/* Tâche en retard (ROUGE) */
+.due-date.overdue {
+    background-color: #ffe0e0; /* Fond rouge très clair */
+    color: #cc0000; /* Texte rouge foncé */
+    border: 1px solid #cc0000;
 }
 
-/* Date bientôt (orange) */
-.task-content .due-date.soon-due {
-    color: orange;
+/* Tâche dont l'échéance est proche (ORANGE/JAUNE) */
+.due-date.soon-due {
+    background-color: #fffacd; /* Fond jaune clair */
+    color: #e68a00; /* Texte orange foncé */
+    border: 1px solid #e68a00;
 }
 
-/* Date dépassée (rouge) */
-.task-content .due-date.overdue {
-    color: var(--danger-color);
+/* Tâche dont l'échéance est lointaine (VERT) */
+.due-date.long-term {
+    background-color: #e0ffe0; /* Fond vert clair */
+    color: #009900; /* Texte vert foncé */
+    border: 1px solid #009900;
 }
+/* --- FIN NOUVEAUX STYLES --- */
 
-/* Style pour l'input de date quand il est en mode modification */
+/* Style pour l'input de date quand il est en mode modification (dans la modale) */
 .task-content .due-date-container input[type="date"] {
     border: 1px solid var(--border-color);
     padding: 5px;
@@ -207,12 +217,13 @@ li.done .actions button.complete {
 }
 
 /* Style pour le placeholder d'ajout de date */
-.task-content .add-date-placeholder {
+.add-date-placeholder {
     font-size: 0.85em;
     color: var(--primary-color);
     font-style: italic;
     text-decoration: underline;
     margin-top: 5px;
+    cursor: pointer; /* Indique qu'il est cliquable */
 }
 
 
