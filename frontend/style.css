@@ -56,10 +56,10 @@ h1 {
     border-radius: 6px;
     font-size: 0.9em;
     margin-bottom: 20px;
-    display: block; /* Prend toute la largeur si pas de flex */
+    display: block;
     margin-left: auto;
     margin-right: auto;
-    max-width: 150px; /* Pour qu'il ne soit pas trop large */
+    max-width: 150px;
     text-align: center;
 }
 
@@ -72,7 +72,8 @@ form {
 }
 
 form input[type="text"],
-form input[type="date"] {
+form input[type="date"],
+form select { /* Ajout du select pour le style du formulaire d'ajout */
     flex-grow: 1;
     padding: 12px;
     border: 1px solid var(--border-color);
@@ -84,7 +85,8 @@ form input[type="date"] {
 }
 
 form input[type="text"]:focus,
-form input[type="date"]:focus {
+form input[type="date"]:focus,
+form select:focus { /* Ajout du select pour le focus */
     border-color: var(--primary-color);
 }
 
@@ -118,6 +120,7 @@ li {
     justify-content: space-between;
     align-items: center;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer; /* Indique que le LI entier est cliquable */
 }
 
 li:hover {
@@ -196,22 +199,22 @@ li.done .actions button.complete {
 
 /* Tâche en retard (ROUGE) */
 .due-date.overdue {
-    background-color: #ffe0e0; /* Fond rouge très clair */
-    color: #cc0000; /* Texte rouge foncé */
+    background-color: #ffe0e0;
+    color: #cc0000;
     border: 1px solid #cc0000;
 }
 
 /* Tâche dont l'échéance est proche (ORANGE/JAUNE) */
 .due-date.soon-due {
-    background-color: #fffacd; /* Fond jaune clair */
-    color: #e68a00; /* Texte orange foncé */
+    background-color: #fffacd;
+    color: #e68a00;
     border: 1px solid #e68a00;
 }
 
 /* Tâche dont l'échéance est lointaine (VERT) */
 .due-date.long-term {
-    background-color: #e0ffe0; /* Fond vert clair */
-    color: #009900; /* Texte vert foncé */
+    background-color: #e0ffe0;
+    color: #009900;
     border: 1px solid #009900;
 }
 /* --- FIN NOUVEAUX STYLES --- */
