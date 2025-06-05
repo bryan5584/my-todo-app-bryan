@@ -1,0 +1,348 @@
+/* Variables CSS pour faciliter les changements de couleur */
+:root {
+    --primary-color: #007bff; /* Bleu standard */
+    --primary-dark: #0056b3;  /* Bleu foncé */
+    --success-color: #28a745; /* Vert pour "Fait" */
+    --danger-color: #dc3545;  /* Rouge pour "Supprimer" */
+    --light-gray: #f4f4f4;    /* Fond léger */
+    --medium-gray: #e9ecef;   /* Fond des items de liste */
+    --text-color: #333;       /* Couleur de texte principale */
+    --subtle-text: #6c757d;   /* Texte barré/discret */
+    --border-color: #ddd;     /* Bordure des inputs */
+    --modal-bg: rgba(0,0,0,0.5); /* Fond de la modale */
+    --modal-content-bg: #fff; /* Fond du contenu de la modale */
+
+    /* NOUVEAUX: Couleurs de priorité */
+    --priority-haute: #ff4d4d; /* Rouge vif */
+    --priority-moyenne: #ffc107; /* Jaune/Orange */
+    --priority-basse: #17a2b8; /* Bleu-vert */
+    --priority-aucune: var(--subtle-text); /* Gris */
+}
+
+/* Basic CSS pour le style de l'application */
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: var(--primary-dark);
+    margin-top: 0;
+    font-size: 2.2em;
+}
+
+form {
+    display: flex;
+    margin-bottom: 25px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+form input[type="text"],
+form input[type="date"] {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.3s ease;
+    min-width: 150px;
+}
+
+form input[type="text"]:focus,
+form input[type="date"]:focus {
+    border-color: var(--primary-color);
+}
+
+form button {
+    padding: 12px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+form button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: var(--medium-gray);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+li:hover {
+    background-color: #e0e4e8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+li.done {
+    text-decoration: line-through;
+    color: var(--subtle-text);
+    background-color: #f0f0f0;
+}
+
+li.done .actions button.complete {
+    background-color: var(--subtle-text);
+}
+
+
+.task-content {
+    flex-grow: 1;
+    margin-right: 10px;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Style pour le texte de la tâche */
+.task-content .task-text {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+/* NOUVEAU: Style pour l'affichage de la priorité */
+.task-content .task-priority {
+    font-size: 0.8em;
+    font-style: italic;
+    font-weight: bold;
+    margin-bottom: 3px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.task-content .priority-haute {
+    background-color: var(--priority-haute);
+    color: white;
+}
+.task-content .priority-moyenne {
+    background-color: var(--priority-moyenne);
+    color: var(--text-color);
+}
+.task-content .priority-basse {
+    background-color: var(--priority-basse);
+    color: white;
+}
+.task-content .priority-aucune {
+    background-color: var(--medium-gray);
+    color: var(--subtle-text);
+}
+
+
+/* Conteneur pour la date, pour un alignement propre */
+.task-content .due-date-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 5px;
+}
+
+.task-content .due-date {
+    font-size: 0.85em;
+    font-style: italic;
+    font-weight: bold;
+}
+
+/* Date dans longtemps (gris) */
+.task-content .due-date.long-term {
+    color: var(--subtle-text);
+}
+
+/* Date bientôt (orange) */
+.task-content .due-date.soon-due {
+    color: orange;
+}
+
+/* Date dépassée (rouge) */
+.task-content .due-date.overdue {
+    color: var(--danger-color);
+}
+
+/* Style pour l'input de date quand il est en mode modification */
+.task-content .due-date-container input[type="date"] {
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    width: 180px;
+    box-sizing: border-box;
+    margin-top: 3px;
+}
+
+/* Style pour le placeholder d'ajout de date */
+.task-content .add-date-placeholder {
+    font-size: 0.85em;
+    color: var(--primary-color);
+    font-style: italic;
+    text-decoration: underline;
+    margin-top: 5px;
+}
+
+
+.actions button {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.actions button.complete {
+    background-color: var(--success-color);
+}
+
+.actions button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+/* Styles pour le message "Pas de tâches" (si activé par JS) */
+#noTasksMessage {
+    text-align: center;
+    color: var(--subtle-text);
+    margin-top: 20px;
+    font-style: italic;
+    font-size: 0.95em;
+}
+
+/* --- STYLES POUR LA MODALE (FENÊTRE POP-UP) --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: var(--modal-bg);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: var(--modal-content-bg);
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.modal-content h2 {
+    text-align: center;
+    color: var(--primary-dark);
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 32px;
+    font-weight: bold;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+.task-detail-item {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-detail-item label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+.modal-content .editable-field {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.modal-content .editable-field:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.modal-content textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.modal-content .save-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-content .save-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
