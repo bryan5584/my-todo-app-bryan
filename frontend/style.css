@@ -371,3 +371,171 @@ li.done .actions button.complete {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
 }
+
+/* Styles pour le sélecteur de priorité dans le formulaire d'ajout */
+#addTaskForm select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    flex-shrink: 0; /* Empêche le sélecteur de se rétrécir */
+}
+
+/* Styles pour l'affichage de la priorité dans la liste des tâches */
+.task-priority {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    margin-left: 10px;
+    font-weight: bold;
+    color: white;
+}
+
+.priority-aucune {
+    background-color: #6c757d; /* Gris */
+}
+
+.priority-basse {
+    background-color: #28a745; /* Vert */
+}
+
+.priority-moyenne {
+    background-color: #ffc107; /* Jaune */
+    color: #333; /* Texte plus sombre pour le jaune */
+}
+
+.priority-haute {
+    background-color: #dc3545; /* Rouge */
+}
+
+/* Styles pour la modale */
+.modal {
+    display: none; /* Caché par défaut */
+    position: fixed; /* Reste en place même en scrollant */
+    z-index: 1000; /* Plus haut que tout le reste */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Permet de scroller si le contenu est trop grand */
+    background-color: rgba(0,0,0,0.4); /* Fond semi-transparent */
+    display: flex; /* Utilise flexbox pour centrer */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Centrage */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Largeur de la modale */
+    max-width: 500px; /* Largeur maximale pour éviter qu'elle soit trop grande */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+    box-sizing: border-box; /* Inclut padding et border dans la largeur/hauteur */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.task-detail-item {
+    margin-bottom: 15px;
+}
+
+.task-detail-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="date"],
+.modal-content textarea,
+.modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Très important pour que la largeur 100% fonctionne */
+}
+
+.modal-content textarea {
+    resize: vertical; /* Permet de redimensionner verticalement */
+}
+
+.save-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    display: block; /* Prend toute la largeur */
+    width: 100%;
+    margin-top: 20px;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles pour la date d'échéance dans la liste */
+.due-date-container {
+    font-size: 0.9em;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.due-date {
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.overdue {
+    color: #dc3545; /* Rouge pour les tâches en retard */
+    font-weight: bold;
+}
+
+.soon-due {
+    color: #ffc107; /* Jaune pour les tâches bientôt dues */
+    font-weight: bold;
+}
+
+.long-term {
+    color: #28a745; /* Vert pour les tâches à long terme */
+}
+
+.add-date-placeholder {
+    color: #999;
+    font-style: italic;
+    cursor: pointer;
+}

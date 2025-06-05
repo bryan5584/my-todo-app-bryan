@@ -28,6 +28,12 @@
         <form id="addTaskForm">
             <input type="text" placeholder="Ajouter une nouvelle tâche..." required>
             <input type="date">
+            <select id="addTaskPriority">
+                <option value="Aucune">Aucune</option>
+                <option value="Basse">Basse</option>
+                <option value="Moyenne">Moyenne</option>
+                <option value="Haute">Haute</option>
+            </select>
             <button type="submit">Ajouter</button>
         </form>
         <div id="noTasksMessage" class="hidden">Aucune tâche pour le moment.</div>

@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             languageSelect.value = lang;
         } catch (error) {
             console.error('Error loading translations:', error);
+            // Si la langue préférée échoue, essayez l'anglais comme fallback
             if (lang !== 'en') {
                 loadTranslations('en');
             }
@@ -40,11 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('header h1').textContent = translateText('appTitle');
         taskInput.placeholder = translateText('addTaskPlaceholder');
         dueDateInput.placeholder = translateText('dueDatePlaceholder');
+        
         // Traduction des options de priorité pour le formulaire d'ajout
-        document.querySelector('#addTaskPriority option[value="Aucune"]').textContent = translateText('priorityNone');
-        document.querySelector('#addTaskPriority option[value="Basse"]').textContent = translateText('priorityLow');
-        document.querySelector('#addTaskPriority option[value="Moyenne"]').textContent = translateText('priorityMedium');
-        document.querySelector('#addTaskPriority option[value="Haute"]').textContent = translateText('priorityHigh');
+        // Assurez-vous que ces éléments existent avant d'essayer de les traduire
+        const addTaskPriorityNone = document.querySelector('#addTaskPriority option[value="Aucune"]');
+        if (addTaskPriorityNone) addTaskPriorityNone.textContent = translateText('priorityNone');
+        const addTaskPriorityLow = document.querySelector('#addTaskPriority option[value="Basse"]');
+        if (addTaskPriorityLow) addTaskPriorityLow.textContent = translateText('priorityLow');
+        const addTaskPriorityMedium = document.querySelector('#addTaskPriority option[value="Moyenne"]');
+        if (addTaskPriorityMedium) addTaskPriorityMedium.textContent = translateText('priorityMedium');
+        const addTaskPriorityHigh = document.querySelector('#addTaskPriority option[value="Haute"]');
+        if (addTaskPriorityHigh) addTaskPriorityHigh.textContent = translateText('priorityHigh');
+        
         document.querySelector('#addTaskForm button[type="submit"]').textContent = translateText('addButton');
         noTasksMessage.textContent = translateText('noTasksMessage');
 
@@ -55,17 +63,26 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.querySelector('#modal-task-description').placeholder = translateText('descriptionPlaceholder');
         modal.querySelector('label[for="modal-task-due-date"]').textContent = translateText('dueDateLabel');
         modal.querySelector('label[for="modal-task-priority"]').textContent = translateText('priorityLabel');
+        
         // Traduction des options de priorité pour la modale (important de les mettre à jour ici aussi)
-        modal.querySelector('#modal-task-priority option[value="Aucune"]').textContent = translateText('priorityNone');
-        modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
-        modal.querySelector('#modal-task-priority option[value="Moyenne"]').textContent = translateText('priorityMedium');
-        modal.querySelector('#modal-task-priority option[value="Haute"]').textContent = translateText('priorityHigh');
+        const modalPriorityNone = modal.querySelector('#modal-task-priority option[value="Aucune"]');
+        if (modalPriorityNone) modalPriorityNone.textContent = translateText('priorityNone');
+        const modalPriorityLow = modal.querySelector('#modal-task-priority option[value="Basse"]');
+        if (modalPriorityLow) modalPriorityLow.textContent = translateText('priorityLow');
+        const modalPriorityMedium = modal.querySelector('#modal-task-priority option[value="Moyenne"]');
+        if (modalPriorityMedium) modalPriorityMedium.textContent = translateText('priorityMedium');
+        const modalPriorityHigh = modal.querySelector('#modal-task-priority option[value="Haute"]');
+        if (modalPriorityHigh) modalPriorityHigh.textContent = translateText('priorityHigh');
+        
         saveTaskDetailsButton.textContent = translateText('saveButton');
 
         // Met à jour les options du sélecteur de langue
         languageSelect.querySelector('option[value="fr"]').textContent = translateText('languageFrench');
         languageSelect.querySelector('option[value="en"]').textContent = translateText('languageEnglish');
         languageSelect.querySelector('option[value="de"]').textContent = translateText('languageGerman');
+        // Assurez-vous que les options des autres langues existent et sont traduites si vous les gardez
+        // languageSelect.querySelector('option[value="es"]').textContent = translateText('languageSpanish');
+        // ...
         languageSelect.value = currentLang;
 
         fetchTasks(); // Re-rendre les tâches pour appliquer les nouvelles traductions
@@ -149,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         content: newContent,
                         description: newDescription || null,
-                        dueDate: newDueDate || null,
+                        dueDate: newDueDate || null, // le backend attend 'dueDate'
                         priority: newPriority
                     })
                 });
@@ -189,8 +206,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         return priorityA - priorityB;
                     }
 
-                    const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-                    const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                    // Correction ici pour s'assurer que les dates nulles sont bien gérées comme étant "après" les dates existantes
+                    const dateA = a.due_date ? new Date(a.due_date).getTime() : Infinity; // Utilise due_date
+                    const dateB = b.due_date ? new Date(b.due_date).getTime() : Infinity; // Utilise due_date
                     return dateA - dateB;
                 });
 
@@ -240,15 +258,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         task.content = newContent;
                         fetchTasks();
                     } else {
-                        taskTextSpan.textContent = task.content;
+                        taskTextSpan.textContent = task.content; // Revert si erreur
                         console.error('Erreur lors de la mise à jour du titre:', response.statusText);
                     }
                 } catch (error) {
-                    taskTextSpan.textContent = task.content;
+                    taskTextSpan.textContent = task.content; // Revert si erreur réseau
                     console.error('Erreur réseau lors de la mise à jour du titre:', error);
                 }
             } else if (newContent === '') {
-                taskTextSpan.textContent = task.content;
+                taskTextSpan.textContent = task.content; // Revert si vide
                 alert(translateText('taskTitleEmptyAlert'));
             }
         });
@@ -273,8 +291,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const dueDateContainer = document.createElement('span');
         dueDateContainer.classList.add('due-date-container');
 
-        if (task.dueDate) {
-            const dueDateObj = new Date(task.dueDate);
+        // CORRECTION ICI : Utilisez task.due_date qui vient du backend
+        if (task.due_date) { 
+            const dueDateObj = new Date(task.due_date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -360,8 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentEditingTask = task;
                 modalTaskTitle.value = task.content;
                 modalTaskDescription.value = task.description || '';
-                modalTaskDueDate.value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
+                // CORRECTION ICI : Utilisez task.due_date pour remplir la modale
+                modalTaskDueDate.value = task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : '';
                 modalTaskPriority.value = task.priority || 'Aucune';
+                
                 // Assure que les options de la modale sont traduites lors de l'ouverture
                 modal.querySelector('#modal-task-priority option[value="Aucune"]').textContent = translateText('priorityNone');
                 modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
@@ -386,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         content: content,
-                        dueDate: dueDate || null,
+                        dueDate: dueDate || null, // Le backend attend 'dueDate'
                         priority: priority // Inclut la priorité lors de l'ajout
                     })
                 });
