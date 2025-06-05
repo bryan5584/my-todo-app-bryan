@@ -1,4 +1,4 @@
-// Code JavaScript pour le front-end de l'application To-Do List (avec i18n)
+// Code JavaScript pour le front-end de l'application To-Do List (avec i18n et modale d'édition)
 
 document.addEventListener('DOMContentLoaded', () => {
     const addTaskForm = document.getElementById('addTaskForm');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let translations = {}; // Objet pour stocker les traductions chargées
     let currentLang = localStorage.getItem('lang') || 'fr'; // Langue par défaut ou celle enregistrée
 
-    // --- NOUVELLES FONCTIONS D'INTERNATIONALISATION ---
+    // --- FONCTIONS D'INTERNATIONALISATION ---
 
     // Fonction pour charger les fichiers de traduction
     async function loadTranslations(lang) {
@@ -23,12 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
             translations = await response.json();
             localStorage.setItem('lang', lang); // Sauvegarde la langue dans le localStorage
             applyTranslations(); // Applique les traductions après chargement
-            // Met à jour le sélecteur de langue pour correspondre à la langue chargée
-            languageSelect.value = lang; 
+            languageSelect.value = lang; // Met à jour le sélecteur de langue
         } catch (error) {
             console.error('Error loading translations:', error);
             // Fallback to default if loading fails
-            if (lang !== 'en') { // Prevent infinite loop if 'en' also fails
+            if (lang !== 'en') {
                 loadTranslations('en'); // Try English as a fallback
             }
         }
@@ -77,38 +76,38 @@ document.addEventListener('DOMContentLoaded', () => {
         loadTranslations(currentLang);
     });
 
-    // --- FIN NOUVELLES FONCTIONS D'INTERNATIONALISATION ---
+    // --- FIN FONCTIONS D'INTERNATIONALISATION ---
 
 
-    // --- ÉLÉMENTS DE LA MODALE EXISTANTS ---
+    // --- ÉLÉMENTS DE LA MODALE ---
     const modal = document.createElement('div');
     modal.classList.add('modal');
     modal.innerHTML = `
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2>Détails de la tâche</h2>
+            <h2>${translateText('taskDetailsTitle')}</h2>
             <div class="task-detail-item">
-                <label for="modal-task-title">Titre:</label>
+                <label for="modal-task-title">${translateText('titleLabel')}</label>
                 <input type="text" id="modal-task-title" class="editable-field">
             </div>
             <div class="task-detail-item">
-                <label for="modal-task-description">Description:</label>
-                <textarea id="modal-task-description" class="editable-field" rows="3" placeholder="Ajouter une description..."></textarea>
+                <label for="modal-task-description">${translateText('descriptionLabel')}</label>
+                <textarea id="modal-task-description" class="editable-field" rows="3" placeholder="${translateText('descriptionPlaceholder')}"></textarea>
             </div>
             <div class="task-detail-item">
-                <label for="modal-task-due-date">Date d'échéance:</label>
+                <label for="modal-task-due-date">${translateText('dueDateLabel')}</label>
                 <input type="date" id="modal-task-due-date" class="editable-field">
             </div>
             <div class="task-detail-item">
-                <label for="modal-task-priority">Priorité:</label>
+                <label for="modal-task-priority">${translateText('priorityLabel')}</label>
                 <select id="modal-task-priority" class="editable-field">
-                    <option value="Aucune">Aucune</option>
-                    <option value="Basse">Basse</option>
-                    <option value="Moyenne">Moyenne</option>
-                    <option value="Haute">Haute</option>
+                    <option value="Aucune">${translateText('priorityNone')}</option>
+                    <option value="Basse">${translateText('priorityLow')}</option>
+                    <option value="Moyenne">${translateText('priorityMedium')}</option>
+                    <option value="Haute">${translateText('priorityHigh')}</option>
                 </select>
             </div>
-            <button id="saveTaskDetails" class="save-button">Enregistrer</button>
+            <button id="saveTaskDetails" class="save-button">${translateText('saveButton')}</button>
         </div>
     `;
     document.body.appendChild(modal);
@@ -141,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newPriority = modalTaskPriority.value;
 
             if (!newContent) {
-                alert(translateText('taskTitleEmptyAlert')); // TRADUIT ICI
+                alert(translateText('taskTitleEmptyAlert'));
                 return;
             }
 
@@ -208,8 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erreur lors de la récupération des tâches:', error);
             noTasksMessage.style.display = 'block';
-            noTasksMessage.textContent = translateText('noTasksMessage'); // TRADUIT ICI
-            noTasksMessage.textContent = 'Erreur de chargement des tâches.'; // Ceci sera écrasé par la ligne au-dessus si la traduction existe
+            noTasksMessage.textContent = translateText('noTasksMessage');
         }
     }
 
@@ -226,21 +224,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const taskTextSpan = document.createElement('span');
         taskTextSpan.textContent = task.content;
-        taskTextSpan.classList.add('task-text'); // Ajout d'une classe pour styliser le texte de la tâche si besoin
+        taskTextSpan.classList.add('task-text');
 
-        // --- NOUVELLE LOGIQUE (CORRIGÉE): Édition inline du texte de la tâche ---
-        taskTextSpan.contentEditable = "true"; // Rend le span éditable
-        taskTextSpan.setAttribute('role', 'textbox'); // Améliore l'accessibilité
-        taskTextSpan.setAttribute('aria-label', `${translateText('titleLabel')} ${task.content}`); // TRADUIT ICI
-        taskTextSpan.title = translateText('doubleClickToEdit'); // TRADUIT ICI
+        // Rendre le texte éditable au double-clic (pour l'édition inline rapide)
+        taskTextSpan.contentEditable = "true";
+        taskTextSpan.setAttribute('role', 'textbox');
+        taskTextSpan.setAttribute('aria-label', `${translateText('titleLabel')} ${task.content}`);
+        taskTextSpan.title = translateText('doubleClickToEdit');
 
-        // **MODIFICATION ICI : CENTRALISATION DE L'OUVERTURE DE LA MODALE**
-        // Un seul clic sur le titre de la tâche ouvre la modale pour l'édition complète.
+        // Ouvre la modale au CLIC SUR LE TEXTE DE LA TÂCHE
         taskTextSpan.addEventListener('click', (e) => {
             // Empêche l'ouverture de la modale si l'utilisateur est déjà en train d'éditer le texte en ligne
             if (document.activeElement === taskTextSpan) {
                 e.preventDefault();
-                e.stopPropagation();
+                e.stopPropagation(); // Évite que le clic sur le li parent ne déclenche autre chose
                 return;
             }
             // Sinon, ouvre la modale
@@ -257,24 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.style.display = 'block';
         });
 
-        taskTextSpan.addEventListener('dblclick', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            taskTextSpan.focus();
-            const range = document.createRange();
-            range.selectNodeContents(taskTextSpan);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-        });
-
-
+        // Gère la sauvegarde du texte de la tâche après édition inline
         taskTextSpan.addEventListener('blur', async () => {
             const newContent = taskTextSpan.textContent.trim();
-            // **MODIFICATION ICI : Appeler la route PUT avec l'ID de la tâche**
             if (newContent !== task.content && newContent !== '') {
                 try {
-                    const response = await fetch(`/api/tasks/${task.id}`, { // S'assure que l'ID est utilisé
+                    const response = await fetch(`/api/tasks/${task.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ content: newContent })
@@ -296,24 +281,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Empêche le retour à la ligne et déclenche la sauvegarde sur "Entrée"
         taskTextSpan.addEventListener('keypress', async (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 taskTextSpan.blur();
             }
         });
-        // --- FIN NOUVELLE LOGIQUE (CORRIGÉE): Édition inline du texte de la tâche ---
 
         taskContentWrapper.appendChild(taskTextSpan);
 
-        // --- Affichage de la priorité (MAJ pour i18n) ---
+        // --- Affichage de la priorité ---
         const prioritySpan = document.createElement('span');
         prioritySpan.textContent = `${translateText('priorityLabel')} ${translateText('priority' + (task.priority || 'Aucune'))}`;
         prioritySpan.classList.add('task-priority');
         prioritySpan.classList.add(`priority-${(task.priority || 'Aucune').toLowerCase()}`);
         taskContentWrapper.appendChild(prioritySpan);
 
-        // LOGIQUE POUR LA DATE ET LA COULEUR (MAJ pour i18n et couleurs spécifiques)
+        // LOGIQUE POUR LA DATE ET LA COULEUR
         const dueDateContainer = document.createElement('span');
         dueDateContainer.classList.add('due-date-container');
 
@@ -329,24 +314,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const dueDateSpan = document.createElement('span');
             dueDateSpan.classList.add('due-date');
 
-            // Nouvelle logique de couleur et de texte pour la date d'échéance
             if (dueDateObj < today) {
-                // Tâche en retard (date passée) - ROUGE
                 dueDateSpan.textContent = translateText('overdueTask') + `: ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
                 dueDateSpan.classList.add('overdue');
             } else if (dueDateObj <= oneWeekLater) {
-                // Tâche dans la semaine à venir (proche) - ORANGE/JAUNE
                 dueDateSpan.textContent = `${translateText('dueDateDisplay')} ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
                 dueDateSpan.classList.add('soon-due');
             } else {
-                // Tâche plus lointaine (plus d'une semaine) - VERT
                 dueDateSpan.textContent = `${translateText('dueDateDisplay')} ${dueDateObj.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : currentLang === 'de' ? 'de-DE' : 'en-US')}`;
                 dueDateSpan.classList.add('long-term');
             }
             dueDateContainer.appendChild(dueDateSpan);
 
         } else {
-            // Tâche sans date d'échéance (gris/normal)
             const addDateSpan = document.createElement('span');
             addDateSpan.textContent = translateText('addDueDatePlaceholder');
             addDateSpan.classList.add('add-date-placeholder');
@@ -358,10 +338,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const actionsDiv = document.createElement('div');
         actionsDiv.classList.add('actions');
 
+        // Bouton Terminer/Annuler
         const completeButton = document.createElement('button');
-        completeButton.textContent = task.done ? translateText('undoCompleteButton') : translateText('completeButton'); // TRADUIT ICI
+        completeButton.textContent = task.done ? translateText('undoCompleteButton') : translateText('completeButton');
         completeButton.classList.add('complete');
-        completeButton.addEventListener('click', async () => {
+        completeButton.addEventListener('click', async (e) => {
+            e.stopPropagation(); // TRÈS IMPORTANT: Empêche le clic de propager au LI parent et d'ouvrir la modale
             const response = await fetch(`/api/tasks/${task.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -374,11 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Bouton Supprimer
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = translateText('deleteButton'); // TRADUIT ICI
+        deleteButton.textContent = translateText('deleteButton');
         deleteButton.classList.add('delete');
-        deleteButton.addEventListener('click', async () => {
-            if (confirm(translateText('confirmDelete'))) { // TRADUIT ICI
+        deleteButton.addEventListener('click', async (e) => {
+            e.stopPropagation(); // TRÈS IMPORTANT: Empêche le clic de propager au LI parent
+            if (confirm(translateText('confirmDelete'))) {
                 const response = await fetch(`/api/tasks/${task.id}`, {
                     method: 'DELETE'
                 });

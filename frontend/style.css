@@ -12,7 +12,7 @@
     --modal-bg: rgba(0,0,0,0.5); /* Fond de la modale */
     --modal-content-bg: #fff; /* Fond du contenu de la modale */
 
-    /* NOUVEAUX: Couleurs de priorité */
+    /* Couleurs de priorité */
     --priority-haute: #ff4d4d; /* Rouge vif */
     --priority-moyenne: #ffc107; /* Jaune/Orange */
     --priority-basse: #17a2b8; /* Bleu-vert */
@@ -48,6 +48,21 @@ h1 {
     margin-top: 0;
     font-size: 2.2em;
 }
+
+/* Sélecteur de langue */
+#language-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    display: block; /* Prend toute la largeur si pas de flex */
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 150px; /* Pour qu'il ne soit pas trop large */
+    text-align: center;
+}
+
 
 form {
     display: flex;
@@ -126,8 +141,8 @@ li.done .actions button.complete {
     margin-right: 10px;
     word-break: break-word;
     display: flex;
-    flex-direction: column; /* Garde la disposition en colonne */
-    align-items: flex-start; /* Aligne les éléments à gauche */
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 /* Style pour le texte de la tâche */
@@ -136,7 +151,6 @@ li.done .actions button.complete {
     font-weight: bold;
     margin-bottom: 5px;
 }
-
 
 /* NOUVEAU: Style pour l'affichage de la priorité */
 .task-content .task-priority {
@@ -166,11 +180,8 @@ li.done .actions button.complete {
     color: var(--subtle-text);
 }
 
-
-/* Conteneur pour la date, pour un alignement propre */
-/* Remarque: Avec task-content en flex-direction: column, il est déjà bien positionné */
 .due-date-container {
-    margin-top: 5px; /* Petit espace au-dessus de la date */
+    margin-top: 5px;
 }
 
 .due-date {
@@ -223,7 +234,7 @@ li.done .actions button.complete {
     font-style: italic;
     text-decoration: underline;
     margin-top: 5px;
-    cursor: pointer; /* Indique qu'il est cliquable */
+    cursor: pointer;
 }
 
 
