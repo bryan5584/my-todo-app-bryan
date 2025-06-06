@@ -9,6 +9,7 @@
   "priorityHigh": "Haute",
   "addButton": "Ajouter",
   "noTasksMessage": "Aucune tâche pour le moment.",
+  "noSearchResults": "Aucun résultat pour cette recherche.",
 
   "taskDetailsTitle": "Détails de la tâche",
   "titleLabel": "Titre",
@@ -42,5 +43,10 @@
   "sortDueDateAsc": "Date d'échéance (plus proche)",
   "sortPriorityHigh": "Priorité (la plus haute)",
   "sortCreationDateDesc": "Date de création (plus récente)",
-  "sortTitleAsc": "Titre (A-Z)"
+  "sortTitleAsc": "Titre (A-Z)",
+
+  "searchPlaceholder": "Rechercher une tâche...",
+  "totalTasks": "Tâches totales",
+  "pendingTasks": "Tâches en attente",
+  "completedTasks": "Tâches terminées"
 }

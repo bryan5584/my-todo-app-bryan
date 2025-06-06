@@ -5,6 +5,7 @@
   "priorityPlaceholder": "Priorität", 
   "addButton": "Hinzufügen",
   "noTasksMessage": "Noch keine Aufgaben. Fügen Sie eine hinzu!",
+  "noSearchResults": "Keine Ergebnisse für diese Suche gefunden.",
   "taskDetailsTitle": "Aufgabendetails",
   "titleLabel": "Titel",
   "descriptionLabel": "Beschreibung",
@@ -40,5 +41,10 @@
   "sortDueDateAsc": "Fälligkeitsdatum (nächste)",
   "sortPriorityHigh": "Priorität (höchste)",
   "sortCreationDateDesc": "Erstellungsdatum (neueste)",
-  "sortTitleAsc": "Titel (A-Z)"
+  "sortTitleAsc": "Titel (A-Z)",
+
+  "searchPlaceholder": "Aufgabe suchen...",
+  "totalTasks": "Gesamtanzahl Aufgaben",
+  "pendingTasks": "Ausstehende Aufgaben",
+  "completedTasks": "Erledigte Aufgaben"
 }

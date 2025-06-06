@@ -38,14 +38,25 @@
             <button type="submit">Ajouter</button>
         </form>
 
-        <div class="filters">
-            <label for="sort-select">Trier par:</label>
-            <select id="sort-select">
-                <option value="dueDateAsc">Date d'échéance (plus proche)</option>
-                <option value="priorityHigh">Priorité (la plus haute)</option>
-                <option value="creationDateDesc">Date de création (plus récente)</option>
-                <option value="titleAsc">Titre (A-Z)</option>
-            </select>
+        <div class="controls-section">
+            <div class="filters">
+                <label for="sort-select">Trier par:</label>
+                <select id="sort-select">
+                    <option value="dueDateAsc">Date d'échéance (plus proche)</option>
+                    <option value="priorityHigh">Priorité (la plus haute)</option>
+                    <option value="creationDateDesc">Date de création (plus récente)</option>
+                    <option value="titleAsc">Titre (A-Z)</option>
+                </select>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher une tâche...">
+            </div>
+        </div>
+
+        <div class="task-counters">
+            <span id="totalTasks">Tâches totales: 0</span>
+            <span id="pendingTasks">Tâches en attente: 0</span>
+            <span id="completedTasks">Tâches terminées: 0</span>
         </div>
         
         <div id="noTasksMessage" class="hidden">Aucune tâche pour le moment.</div>

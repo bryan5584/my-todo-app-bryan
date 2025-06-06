@@ -1,4 +1,4 @@
-// Code JavaScript pour le front-end de l'application To-Do List (avec i18n et modale d'édition)
+// Code JavaScript pour le front-end de l'application To-Do List (avec i18n, modale d'édition, tri, recherche et compteurs)
 
 document.addEventListener('DOMContentLoaded', () => {
     const addTaskForm = document.getElementById('addTaskForm');
@@ -8,10 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('taskList');
     const noTasksMessage = document.getElementById('noTasksMessage');
     const languageSelect = document.getElementById('language-select');
-    const sortSelect = document.getElementById('sort-select'); // NOUVEAU: Sélecteur de tri
+    const sortSelect = document.getElementById('sort-select'); 
+    const searchInput = document.getElementById('searchInput'); // NOUVEAU: Barre de recherche
+    const totalTasksSpan = document.getElementById('totalTasks'); // NOUVEAU: Compteur total
+    const pendingTasksSpan = document.getElementById('pendingTasks'); // NOUVEAU: Compteur en attente
+    const completedTasksSpan = document.getElementById('completedTasks'); // NOUVEAU: Compteur terminé
 
     let translations = {};
     let currentLang = localStorage.getItem('lang') || 'fr';
+    let allTasks = []; // Stocke toutes les tâches pour le filtrage local
 
     // --- FONCTIONS D'INTERNATIONALISATION ---
 
@@ -63,13 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#addTaskForm button[type="submit"]').textContent = translateText('addButton');
         noTasksMessage.textContent = translateText('noTasksMessage');
 
-        // Traduction des options de tri (NOUVEAU)
+        // Traduction des options de tri
         document.querySelector('label[for="sort-select"]').textContent = translateText('sortByLabel');
         document.querySelector('#sort-select option[value="dueDateAsc"]').textContent = translateText('sortDueDateAsc');
         document.querySelector('#sort-select option[value="priorityHigh"]').textContent = translateText('sortPriorityHigh');
         document.querySelector('#sort-select option[value="creationDateDesc"]').textContent = translateText('sortCreationDateDesc');
         document.querySelector('#sort-select option[value="titleAsc"]').textContent = translateText('sortTitleAsc');
 
+        // Traduction du placeholder de recherche (NOUVEAU)
+        searchInput.placeholder = translateText('searchPlaceholder');
 
         // Modale
         modal.querySelector('h2').textContent = translateText('taskDetailsTitle');
@@ -108,7 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         languageSelect.value = currentLang;
 
-        fetchTasks(); // Re-rendre les tâches pour appliquer les nouvelles traductions et le tri
+        updateTaskCounters(allTasks); // Met à jour les compteurs avec les traductions
+        renderTasks(allTasks); // Re-rendre les tâches pour appliquer les nouvelles traductions et le tri
     }
 
     languageSelect.addEventListener('change', (e) => {
@@ -116,8 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loadTranslations(currentLang);
     });
 
-    sortSelect.addEventListener('change', () => { // NOUVEAU: Écouteur pour le tri
-        fetchTasks(); 
+    sortSelect.addEventListener('change', () => { 
+        renderTasks(allTasks); // Applique le tri sur les tâches déjà chargées
+    });
+
+    searchInput.addEventListener('input', () => { // NOUVEAU: Écouteur pour la recherche
+        renderTasks(allTasks); // Re-rend les tâches filtrées et triées
     });
 
     // --- FIN FONCTIONS D'INTERNATIONALISATION ---
@@ -199,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 if (response.ok) {
                     modal.style.display = 'none';
-                    fetchTasks();
+                    fetchTasks(); // Recharge et re-rend les tâches
                 } else {
                     console.error('Erreur lors de la mise à jour des détails de la tâche:', response.statusText);
                 }
@@ -209,71 +221,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // NOUVEAU: Fonction pour mettre à jour les compteurs
+    function updateTaskCounters(tasks) {
+        const total = tasks.length;
+        const pending = tasks.filter(task => !task.done).length;
+        const completed = tasks.filter(task => task.done).length;
 
-    // Fonction pour charger et afficher les tâches (MODIFIÉE POUR LE TRI)
+        totalTasksSpan.textContent = `${translateText('totalTasks')}: ${total}`;
+        pendingTasksSpan.textContent = `${translateText('pendingTasks')}: ${pending}`;
+        completedTasksSpan.textContent = `${translateText('completedTasks')}: ${completed}`;
+    }
+
+    // Fonction pour charger et afficher les tâches (MODIFIÉE POUR LE TRI ET LA RECHERCHE)
     async function fetchTasks() {
         try {
             const response = await fetch('/api/tasks');
-            const tasks = await response.json();
-
-            taskList.innerHTML = '';
-
-            if (tasks.length === 0) {
-                noTasksMessage.style.display = 'block';
-            } else {
-                noTasksMessage.style.display = 'none';
-
-                const sortBy = sortSelect.value; // Récupère l'option de tri sélectionnée
-
-                tasks.sort((a, b) => {
-                    // Les tâches terminées vont toujours à la fin
-                    if (a.done && !b.done) return 1;
-                    if (!a.done && b.done) return -1;
-
-                    // Logique de tri selon l'option sélectionnée
-                    switch (sortBy) {
-                        case 'priorityHigh':
-                            const priorityOrder = { 'Haute': 1, 'Moyenne': 2, 'Basse': 3, 'Aucune': 4 };
-                            const priorityA = priorityOrder[a.priority || 'Aucune'];
-                            const priorityB = priorityOrder[b.priority || 'Aucune'];
-                            if (priorityA !== priorityB) {
-                                return priorityA - priorityB;
-                            }
-                            break;
-                        case 'dueDateAsc':
-                            const dateA = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-                            const dateB = b.due_date ? new Date(b.due_date).getTime() : Infinity;
-                            if (dateA !== dateB) {
-                                return dateA - dateB;
-                            }
-                            break;
-                        case 'creationDateDesc':
-                            // Utilise la date de création du backend (timestamp ou chaîne ISO)
-                            const creationA = new Date(a.created_at).getTime(); 
-                            const creationB = new Date(b.created_at).getTime();
-                            return creationB - creationA; // Plus récente en premier
-                        case 'titleAsc':
-                            return a.content.localeCompare(b.content); // Tri alphabétique par titre
-                        default:
-                            // Fallback, si aucun tri spécifique n'est choisi ou si le cas n'est pas géré
-                            break;
-                    }
-                    // Si les critères de tri principaux sont égaux, trier par ID pour une cohérence
-                    return a.id - b.id;
-                });
-
-                tasks.forEach(task => {
-                    renderTask(task);
-                });
-            }
+            allTasks = await response.json(); // Stocke toutes les tâches brutes
+            renderTasks(allTasks); // Appelle renderTasks avec toutes les tâches pour filtrage/tri/affichage
         } catch (error) {
             console.error('Erreur lors de la récupération des tâches:', error);
             noTasksMessage.style.display = 'block';
             noTasksMessage.textContent = translateText('noTasksMessage');
+            updateTaskCounters([]); // Met à jour les compteurs même en cas d'erreur
         }
     }
 
-    // Fonction pour afficher une tâche individuelle dans la liste
+    // NOUVEAU: Fonction pour rendre les tâches après filtrage et tri
+    function renderTasks(tasksToRender) {
+        let filteredAndSortedTasks = [...tasksToRender]; // Copie pour ne pas modifier l'original
+
+        // 1. Filtrage par recherche
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        if (searchTerm) {
+            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => 
+                task.content.toLowerCase().includes(searchTerm) || 
+                (task.description && task.description.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        // 2. Tri
+        const sortBy = sortSelect.value; 
+        filteredAndSortedTasks.sort((a, b) => {
+            // Les tâches terminées vont toujours à la fin
+            if (a.done && !b.done) return 1;
+            if (!a.done && b.done) return -1;
+
+            switch (sortBy) {
+                case 'priorityHigh':
+                    const priorityOrder = { 'Haute': 1, 'Moyenne': 2, 'Basse': 3, 'Aucune': 4 };
+                    const priorityA = priorityOrder[a.priority || 'Aucune'];
+                    const priorityB = priorityOrder[b.priority || 'Aucune'];
+                    if (priorityA !== priorityB) {
+                        return priorityA - priorityB;
+                    }
+                    break;
+                case 'dueDateAsc':
+                    const dateA = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+                    const dateB = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+                    if (dateA !== dateB) {
+                        return dateA - dateB;
+                    }
+                    break;
+                case 'creationDateDesc':
+                    const creationA = new Date(a.created_at).getTime(); 
+                    const creationB = new Date(b.created_at).getTime();
+                    return creationB - creationA; 
+                case 'titleAsc':
+                    return a.content.localeCompare(b.content); 
+                default:
+                    break;
+            }
+            return a.id - b.id; // Fallback par ID pour la stabilité
+        });
+
+        taskList.innerHTML = ''; // Vide la liste actuelle
+
+        if (filteredAndSortedTasks.length === 0) {
+            noTasksMessage.style.display = 'block';
+            // Modifier le message si c'est dû à la recherche ou au filtre
+            noTasksMessage.textContent = searchTerm ? translateText('noSearchResults') : translateText('noTasksMessage');
+        } else {
+            noTasksMessage.style.display = 'none';
+            filteredAndSortedTasks.forEach(task => {
+                renderTask(task);
+            });
+        }
+        updateTaskCounters(tasksToRender); // Les compteurs sont basés sur TOUTES les tâches, pas seulement les filtrées/triées
+    }
+
+    // Fonction pour afficher une tâche individuelle (inchangée, mais sera appelée par renderTasks)
     function renderTask(task) {
         const li = document.createElement('li');
         li.dataset.id = task.id;
@@ -304,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     if (response.ok) {
                         task.content = newContent;
-                        fetchTasks();
+                        fetchTasks(); 
                     } else {
                         taskTextSpan.textContent = task.content; 
                         console.error('Erreur lors de la mise à jour du titre:', response.statusText);
@@ -394,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ done: !task.done })
             });
             if (response.ok) {
-                fetchTasks();
+                fetchTasks(); 
             } else {
                 console.error('Erreur lors de la mise à jour de la tâche:', response.statusText);
             }
@@ -410,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    fetchTasks();
+                    fetchTasks(); 
                 } else {
                     console.error('Erreur lors de la suppression de la tâche:', response.statusText);
                 }
@@ -466,8 +502,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     taskInput.value = '';
                     dueDateInput.value = '';
-                    priorityInput.value = ''; // Réinitialise à vide pour le placeholder
-                    fetchTasks();
+                    priorityInput.value = ''; 
+                    fetchTasks(); 
                 } else {
                     console.error('Erreur lors de l\'ajout de la tâche:', response.statusText);
                 }

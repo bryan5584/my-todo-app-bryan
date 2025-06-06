@@ -5,6 +5,7 @@
   "priorityPlaceholder": "Priority", 
   "addButton": "Add",
   "noTasksMessage": "No tasks yet. Add one!",
+  "noSearchResults": "No results found for this search.",
   "taskDetailsTitle": "Task Details",
   "titleLabel": "Title",
   "descriptionLabel": "Description",
@@ -40,5 +41,10 @@
   "sortDueDateAsc": "Due Date (closest)",
   "sortPriorityHigh": "Priority (highest)",
   "sortCreationDateDesc": "Creation Date (newest)",
-  "sortTitleAsc": "Title (A-Z)"
+  "sortTitleAsc": "Title (A-Z)",
+
+  "searchPlaceholder": "Search task...",
+  "totalTasks": "Total Tasks",
+  "pendingTasks": "Pending Tasks",
+  "completedTasks": "Completed Tasks"
 }
