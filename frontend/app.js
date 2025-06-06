@@ -71,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         searchInput.placeholder = translateText('searchPlaceholder');
 
+        // Ces lignes ne doivent s'appliquer que si la modale est visible
+        // Elles sont gérées par la fonction showModal ou par le click event listener
         modal.querySelector('h2').textContent = translateText('taskDetailsTitle');
         modal.querySelector('label[for="modal-task-title"]').textContent = translateText('titleLabel');
         modal.querySelector('label[for="modal-task-description"]').textContent = translateText('descriptionLabel');
@@ -450,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
                 modal.querySelector('#modal-task-priority option[value="Moyenne"]').textContent = translateText('priorityMedium');
                 modal.querySelector('#modal-task-priority option[value="Haute"]').textContent = translateText('priorityHigh');
-                modal.style.display = 'block';
+                modal.style.display = 'flex'; // Utilise 'flex' ici pour le centrage via CSS
             }
         });
     }

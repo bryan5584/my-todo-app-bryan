@@ -357,8 +357,9 @@ li.done .actions button.complete {
     border-radius: 8px;
 }
 
+/* --- DÉBUT DE LA SECTION MODALE CORRIGÉE --- */
 .modal {
-    display: none;
+    display: none; /* C'EST LA LIGNE CLÉ : cache la modale par défaut */
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -367,7 +368,7 @@ li.done .actions button.complete {
     height: 100%;
     overflow: auto;
     background-color: var(--modal-overlay-bg);
-    display: flex;
+    /* Ces propriétés permettent le centrage quand display est mis à 'flex' par JS */
     justify-content: center;
     align-items: center;
 }
@@ -389,6 +390,7 @@ li.done .actions button.complete {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* --- FIN DE LA SECTION MODALE CORRIGÉE --- */
 
 .close-button {
     color: #999;
