@@ -2,6 +2,7 @@
   "appTitle": "Ma To-Do List",
   "addTaskPlaceholder": "Ajouter une nouvelle tâche...",
   "dueDatePlaceholder": "Date d'échéance",
+  "priorityPlaceholder": "Priorité",  
   "priorityNone": "Aucune",
   "priorityLow": "Basse",
   "priorityMedium": "Moyenne",
@@ -35,5 +36,11 @@
   "languageItalian": "Italien",
   "languagePortuguese": "Portugais",
   "languageChinese": "Chinois",
-  "languageJapanese": "Japonais"
+  "languageJapanese": "Japonais",
+
+  "sortByLabel": "Trier par:",
+  "sortDueDateAsc": "Date d'échéance (plus proche)",
+  "sortPriorityHigh": "Priorité (la plus haute)",
+  "sortCreationDateDesc": "Date de création (plus récente)",
+  "sortTitleAsc": "Titre (A-Z)"
 }

@@ -2,6 +2,7 @@
   "appTitle": "My To-Do List",
   "addTaskPlaceholder": "Add a new task...",
   "dueDatePlaceholder": "Due Date",
+  "priorityPlaceholder": "Priority", 
   "addButton": "Add",
   "noTasksMessage": "No tasks yet. Add one!",
   "taskDetailsTitle": "Task Details",
@@ -33,5 +34,11 @@
   "languagePortuguese": "Portuguese",
   "languageChinese": "Chinese",
   "languageJapanese": "Japanese",
-  "overdueTask": "Overdue"
+  "overdueTask": "Overdue",
+
+  "sortByLabel": "Sort by:",
+  "sortDueDateAsc": "Due Date (closest)",
+  "sortPriorityHigh": "Priority (highest)",
+  "sortCreationDateDesc": "Creation Date (newest)",
+  "sortTitleAsc": "Title (A-Z)"
 }

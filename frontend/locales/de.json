@@ -2,6 +2,7 @@
   "appTitle": "Meine To-Do-Liste",
   "addTaskPlaceholder": "Neue Aufgabe hinzufügen...",
   "dueDatePlaceholder": "Fälligkeitsdatum",
+  "priorityPlaceholder": "Priorität", 
   "addButton": "Hinzufügen",
   "noTasksMessage": "Noch keine Aufgaben. Fügen Sie eine hinzu!",
   "taskDetailsTitle": "Aufgabendetails",
@@ -33,5 +34,11 @@
   "languagePortuguese": "Portugiesisch",
   "languageChinese": "Chinesisch",
   "languageJapanese": "Japanisch",
-  "overdueTask": "Überfällig"
+  "overdueTask": "Überfällig",
+
+  "sortByLabel": "Sortieren nach:",
+  "sortDueDateAsc": "Fälligkeitsdatum (nächste)",
+  "sortPriorityHigh": "Priorität (höchste)",
+  "sortCreationDateDesc": "Erstellungsdatum (neueste)",
+  "sortTitleAsc": "Titel (A-Z)"
 }

@@ -29,6 +29,7 @@
             <input type="text" placeholder="Ajouter une nouvelle tâche..." required>
             <input type="date">
             <select id="addTaskPriority">
+                <option value="" disabled selected hidden data-i18n-key="priorityPlaceholder"></option> 
                 <option value="Aucune">Aucune</option>
                 <option value="Basse">Basse</option>
                 <option value="Moyenne">Moyenne</option>
@@ -36,6 +37,17 @@
             </select>
             <button type="submit">Ajouter</button>
         </form>
+
+        <div class="filters">
+            <label for="sort-select">Trier par:</label>
+            <select id="sort-select">
+                <option value="dueDateAsc">Date d'échéance (plus proche)</option>
+                <option value="priorityHigh">Priorité (la plus haute)</option>
+                <option value="creationDateDesc">Date de création (plus récente)</option>
+                <option value="titleAsc">Titre (A-Z)</option>
+            </select>
+        </div>
+        
         <div id="noTasksMessage" class="hidden">Aucune tâche pour le moment.</div>
         <ul id="taskList">
             </ul>

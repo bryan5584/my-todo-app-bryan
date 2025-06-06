@@ -4,10 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskForm = document.getElementById('addTaskForm');
     const taskInput = document.querySelector('#addTaskForm input[type="text"]');
     const dueDateInput = document.querySelector('#addTaskForm input[type="date"]');
-    const priorityInput = document.getElementById('addTaskPriority'); // Nouveau: sélecteur de priorité pour l'ajout
+    const priorityInput = document.getElementById('addTaskPriority'); 
     const taskList = document.getElementById('taskList');
     const noTasksMessage = document.getElementById('noTasksMessage');
     const languageSelect = document.getElementById('language-select');
+    const sortSelect = document.getElementById('sort-select'); // NOUVEAU: Sélecteur de tri
 
     let translations = {};
     let currentLang = localStorage.getItem('lang') || 'fr';
@@ -18,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`./locales/${lang}.json`);
             if (!response.ok) {
-                // Si le fichier de langue spécifique n'est pas trouvé, essayez le fallback
                 throw new Error(`Failed to load translation for ${lang}, trying fallback`);
             }
             translations = await response.json();
@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
             languageSelect.value = lang;
         } catch (error) {
             console.error('Error loading translations:', error);
-            // Si la langue préférée échoue ou n'est pas trouvée, essayez l'anglais comme fallback
-            // Et s'il n'y a pas de fallback, afficher une alerte
             if (lang !== 'en') {
                 loadTranslations('en');
             } else {
@@ -46,8 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
         taskInput.placeholder = translateText('addTaskPlaceholder');
         dueDateInput.placeholder = translateText('dueDatePlaceholder');
 
+        // Traduction de l'option placeholder pour la priorité
+        const addTaskPriorityPlaceholder = document.querySelector('#addTaskPriority option[value=""]'); 
+        if (addTaskPriorityPlaceholder) {
+            addTaskPriorityPlaceholder.textContent = translateText('priorityPlaceholder');
+        }
+        
         // Traduction des options de priorité pour le formulaire d'ajout
-        // Assurez-vous que ces éléments existent avant d'essayer de les traduire
         const addTaskPriorityNone = document.querySelector('#addTaskPriority option[value="Aucune"]');
         if (addTaskPriorityNone) addTaskPriorityNone.textContent = translateText('priorityNone');
         const addTaskPriorityLow = document.querySelector('#addTaskPriority option[value="Basse"]');
@@ -56,9 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (addTaskPriorityMedium) addTaskPriorityMedium.textContent = translateText('priorityMedium');
         const addTaskPriorityHigh = document.querySelector('#addTaskPriority option[value="Haute"]');
         if (addTaskPriorityHigh) addTaskPriorityHigh.textContent = translateText('priorityHigh');
-
+        
         document.querySelector('#addTaskForm button[type="submit"]').textContent = translateText('addButton');
         noTasksMessage.textContent = translateText('noTasksMessage');
+
+        // Traduction des options de tri (NOUVEAU)
+        document.querySelector('label[for="sort-select"]').textContent = translateText('sortByLabel');
+        document.querySelector('#sort-select option[value="dueDateAsc"]').textContent = translateText('sortDueDateAsc');
+        document.querySelector('#sort-select option[value="priorityHigh"]').textContent = translateText('sortPriorityHigh');
+        document.querySelector('#sort-select option[value="creationDateDesc"]').textContent = translateText('sortCreationDateDesc');
+        document.querySelector('#sort-select option[value="titleAsc"]').textContent = translateText('sortTitleAsc');
+
 
         // Modale
         modal.querySelector('h2').textContent = translateText('taskDetailsTitle');
@@ -68,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.querySelector('label[for="modal-task-due-date"]').textContent = translateText('dueDateLabel');
         modal.querySelector('label[for="modal-task-priority"]').textContent = translateText('priorityLabel');
 
-        // Traduction des options de priorité pour la modale (important de les mettre à jour ici aussi)
+        // Traduction des options de priorité pour la modale
         const modalPriorityNone = modal.querySelector('#modal-task-priority option[value="Aucune"]');
         if (modalPriorityNone) modalPriorityNone.textContent = translateText('priorityNone');
         const modalPriorityLow = modal.querySelector('#modal-task-priority option[value="Basse"]');
@@ -84,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         languageSelect.querySelector('option[value="fr"]').textContent = translateText('languageFrench');
         languageSelect.querySelector('option[value="en"]').textContent = translateText('languageEnglish');
         languageSelect.querySelector('option[value="de"]').textContent = translateText('languageGerman');
-        // Ajoute ici les traductions pour les nouvelles langues (si les options existent dans HTML)
         const languageSpanish = languageSelect.querySelector('option[value="es"]');
         if(languageSpanish) languageSpanish.textContent = translateText('languageSpanish');
         const languageItalian = languageSelect.querySelector('option[value="it"]');
@@ -98,12 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         languageSelect.value = currentLang;
 
-        fetchTasks(); // Re-rendre les tâches pour appliquer les nouvelles traductions
+        fetchTasks(); // Re-rendre les tâches pour appliquer les nouvelles traductions et le tri
     }
 
     languageSelect.addEventListener('change', (e) => {
         currentLang = e.target.value;
         loadTranslations(currentLang);
+    });
+
+    sortSelect.addEventListener('change', () => { // NOUVEAU: Écouteur pour le tri
+        fetchTasks(); 
     });
 
     // --- FIN FONCTIONS D'INTERNATIONALISATION ---
@@ -179,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         content: newContent,
                         description: newDescription || null,
-                        dueDate: newDueDate || null, // le backend attend 'dueDate'
+                        dueDate: newDueDate || null,
                         priority: newPriority
                     })
                 });
@@ -196,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Fonction pour charger et afficher les tâches
+    // Fonction pour charger et afficher les tâches (MODIFIÉE POUR LE TRI)
     async function fetchTasks() {
         try {
             const response = await fetch('/api/tasks');
@@ -208,22 +222,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 noTasksMessage.style.display = 'block';
             } else {
                 noTasksMessage.style.display = 'none';
+
+                const sortBy = sortSelect.value; // Récupère l'option de tri sélectionnée
+
                 tasks.sort((a, b) => {
+                    // Les tâches terminées vont toujours à la fin
                     if (a.done && !b.done) return 1;
                     if (!a.done && b.done) return -1;
 
-                    // IMPORTANT: Les clés de priorité doivent être les VALEURS non traduites que le backend renvoie (ex: "Haute", "Moyenne")
-                    const priorityOrder = { 'Haute': 1, 'Moyenne': 2, 'Basse': 3, 'Aucune': 4 };
-                    const priorityA = priorityOrder[a.priority || 'Aucune'];
-                    const priorityB = priorityOrder[b.priority || 'Aucune'];
-                    if (priorityA !== priorityB) {
-                        return priorityA - priorityB;
+                    // Logique de tri selon l'option sélectionnée
+                    switch (sortBy) {
+                        case 'priorityHigh':
+                            const priorityOrder = { 'Haute': 1, 'Moyenne': 2, 'Basse': 3, 'Aucune': 4 };
+                            const priorityA = priorityOrder[a.priority || 'Aucune'];
+                            const priorityB = priorityOrder[b.priority || 'Aucune'];
+                            if (priorityA !== priorityB) {
+                                return priorityA - priorityB;
+                            }
+                            break;
+                        case 'dueDateAsc':
+                            const dateA = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+                            const dateB = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+                            if (dateA !== dateB) {
+                                return dateA - dateB;
+                            }
+                            break;
+                        case 'creationDateDesc':
+                            // Utilise la date de création du backend (timestamp ou chaîne ISO)
+                            const creationA = new Date(a.created_at).getTime(); 
+                            const creationB = new Date(b.created_at).getTime();
+                            return creationB - creationA; // Plus récente en premier
+                        case 'titleAsc':
+                            return a.content.localeCompare(b.content); // Tri alphabétique par titre
+                        default:
+                            // Fallback, si aucun tri spécifique n'est choisi ou si le cas n'est pas géré
+                            break;
                     }
-
-                    // Correction ici pour s'assurer que les dates nulles sont bien gérées comme étant "après" les dates existantes
-                    const dateA = a.due_date ? new Date(a.due_date).getTime() : Infinity; // Utilise due_date
-                    const dateB = b.due_date ? new Date(b.due_date).getTime() : Infinity; // Utilise due_date
-                    return dateA - dateB;
+                    // Si les critères de tri principaux sont égaux, trier par ID pour une cohérence
+                    return a.id - b.id;
                 });
 
                 tasks.forEach(task => {
@@ -252,13 +288,11 @@ document.addEventListener('DOMContentLoaded', () => {
         taskTextSpan.textContent = task.content;
         taskTextSpan.classList.add('task-text');
 
-        // Permet l'édition du texte de la tâche au double-clic (pour l'édition inline rapide)
         taskTextSpan.contentEditable = "true";
         taskTextSpan.setAttribute('role', 'textbox');
         taskTextSpan.setAttribute('aria-label', `${translateText('titleLabel')} ${task.content}`);
         taskTextSpan.title = translateText('doubleClickToEdit');
 
-        // Gère la sauvegarde du texte de la tâche après édition inline
         taskTextSpan.addEventListener('blur', async () => {
             const newContent = taskTextSpan.textContent.trim();
             if (newContent !== task.content && newContent !== '') {
@@ -272,15 +306,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         task.content = newContent;
                         fetchTasks();
                     } else {
-                        taskTextSpan.textContent = task.content; // Revert si erreur
+                        taskTextSpan.textContent = task.content; 
                         console.error('Erreur lors de la mise à jour du titre:', response.statusText);
                     }
                 } catch (error) {
-                    taskTextSpan.textContent = task.content; // Revert si erreur réseau
+                    taskTextSpan.textContent = task.content; 
                     console.error('Erreur réseau lors de la mise à jour du titre:', error);
                 }
             } else if (newContent === '') {
-                taskTextSpan.textContent = task.content; // Revert si vide
+                taskTextSpan.textContent = task.content; 
                 alert(translateText('taskTitleEmptyAlert'));
             }
         });
@@ -294,37 +328,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         taskContentWrapper.appendChild(taskTextSpan);
 
-        // --- CORRECTION AFFICHAGE DE LA PRIORITÉ ---
         const prioritySpan = document.createElement('span');
-        const priorityValueFromBackend = task.priority || 'Aucune'; // "Haute", "Moyenne", "Basse", "Aucune"
+        const priorityValueFromBackend = task.priority || 'Aucune'; 
         let translatedPriorityText = '';
 
         switch (priorityValueFromBackend) {
-            case 'Haute':
-                translatedPriorityText = translateText('priorityHigh');
-                break;
-            case 'Moyenne':
-                translatedPriorityText = translateText('priorityMedium');
-                break;
-            case 'Basse':
-                translatedPriorityText = translateText('priorityLow');
-                break;
-            case 'Aucune':
-            default:
-                translatedPriorityText = translateText('priorityNone');
-                break;
+            case 'Haute': translatedPriorityText = translateText('priorityHigh'); break;
+            case 'Moyenne': translatedPriorityText = translateText('priorityMedium'); break;
+            case 'Basse': translatedPriorityText = translateText('priorityLow'); break;
+            case 'Aucune': default: translatedPriorityText = translateText('priorityNone'); break;
         }
 
-        prioritySpan.textContent = `${translateText('priorityLabel')} ${translatedPriorityText}`; // Affiche "Priorité: Haute"
+        prioritySpan.textContent = `${translateText('priorityLabel')} ${translatedPriorityText}`; 
         prioritySpan.classList.add('task-priority');
-        prioritySpan.classList.add(`priority-${priorityValueFromBackend.toLowerCase()}`); // La classe CSS utilise le format en minuscules (haute, moyenne...)
+        prioritySpan.classList.add(`priority-${priorityValueFromBackend.toLowerCase()}`); 
         taskContentWrapper.appendChild(prioritySpan);
 
-        // LOGIQUE POUR LA DATE ET LA COULEUR
         const dueDateContainer = document.createElement('span');
         dueDateContainer.classList.add('due-date-container');
 
-        // CORRECTION ICI : Utilisez task.due_date qui vient du backend
         if (task.due_date) {
             const dueDateObj = new Date(task.due_date);
             const today = new Date();
@@ -361,12 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const actionsDiv = document.createElement('div');
         actionsDiv.classList.add('actions');
 
-        // Bouton Terminer/Annuler
         const completeButton = document.createElement('button');
         completeButton.textContent = task.done ? translateText('undoCompleteButton') : translateText('completeButton');
         completeButton.classList.add('complete');
         completeButton.addEventListener('click', async (e) => {
-            e.stopPropagation(); // TRÈS IMPORTANT: Empêche le clic de propager au LI parent et d'ouvrir la modale
+            e.stopPropagation(); 
             const response = await fetch(`/api/tasks/${task.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -379,12 +400,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Bouton Supprimer
         const deleteButton = document.createElement('button');
         deleteButton.textContent = translateText('deleteButton');
         deleteButton.classList.add('delete');
         deleteButton.addEventListener('click', async (e) => {
-            e.stopPropagation(); // TRÈS IMPORTANT: Empêche le clic de propager au LI parent
+            e.stopPropagation(); 
             if (confirm(translateText('confirmDelete'))) {
                 const response = await fetch(`/api/tasks/${task.id}`, {
                     method: 'DELETE'
@@ -404,20 +424,14 @@ document.addEventListener('DOMContentLoaded', () => {
         li.appendChild(actionsDiv);
         taskList.appendChild(li);
 
-        // Écouteur de clic sur le LI entier pour ouvrir la modale
-        // Ne doit pas être sur taskTextSpan pour éviter les conflits avec l'édition inline
         li.addEventListener('click', (e) => {
-            // Vérifie si le clic n'a pas été sur un bouton d'action ou le champ de texte en édition
             if (!e.target.closest('.actions button') && e.target !== taskTextSpan && document.activeElement !== taskTextSpan) {
                 currentEditingTask = task;
                 modalTaskTitle.value = task.content;
                 modalTaskDescription.value = task.description || '';
-                // CORRECTION ICI : Utilisez task.due_date pour remplir la modale
                 modalTaskDueDate.value = task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : '';
                 modalTaskPriority.value = task.priority || 'Aucune';
 
-                // Assure que les options de la modale sont traduites lors de l'ouverture
-                // Ces lignes sont déjà bonnes, elles utilisent translateText
                 modal.querySelector('#modal-task-priority option[value="Aucune"]').textContent = translateText('priorityNone');
                 modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
                 modal.querySelector('#modal-task-priority option[value="Moyenne"]').textContent = translateText('priorityMedium');
@@ -427,12 +441,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Gère l'ajout d'une nouvelle tâche
     addTaskForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const content = taskInput.value.trim();
         const dueDate = dueDateInput.value;
-        const priority = priorityInput.value; // Récupère la priorité
+        let priority = priorityInput.value; 
+
+        if (priority === '') {
+            priority = 'Aucune';
+        }
 
         if (content) {
             try {
@@ -441,15 +458,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         content: content,
-                        dueDate: dueDate || null, // Le backend attend 'dueDate'
-                        description: '', // Ajoute une description vide par défaut si non fournie
-                        priority: priority // Inclut la priorité lors de l'ajout
+                        dueDate: dueDate || null, 
+                        description: '', 
+                        priority: priority 
                     })
                 });
                 if (response.ok) {
                     taskInput.value = '';
                     dueDateInput.value = '';
-                    priorityInput.value = 'Aucune'; // Réinitialise la priorité
+                    priorityInput.value = ''; // Réinitialise à vide pour le placeholder
                     fetchTasks();
                 } else {
                     console.error('Erreur lors de l\'ajout de la tâche:', response.statusText);
