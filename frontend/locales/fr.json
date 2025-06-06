@@ -2,10 +2,10 @@
   "appTitle": "Ma To-Do List",
   "addTaskPlaceholder": "Ajouter une nouvelle tâche...",
   "dueDatePlaceholder": "Date d'échéance",
-  "priorityNone": "Aucune",  
-  "priorityLow": "Basse",    
-  "priorityMedium": "Moyenne", 
-  "priorityHigh": "Haute",    
+  "priorityNone": "Aucune",
+  "priorityLow": "Basse",
+  "priorityMedium": "Moyenne",
+  "priorityHigh": "Haute",
   "addButton": "Ajouter",
   "noTasksMessage": "Aucune tâche pour le moment.",
 
@@ -14,13 +14,13 @@
   "descriptionLabel": "Description",
   "descriptionPlaceholder": "Ajouter une description...",
   "dueDateLabel": "Date d'échéance",
-  "priorityLabel": "Priorité:",
+  "priorityLabel": "Priorité :",
   "saveButton": "Sauvegarder",
   "taskTitleEmptyAlert": "Le titre de la tâche ne peut pas être vide !",
   "doubleClickToEdit": "Double-cliquez pour modifier",
 
   "overdueTask": "En retard",
-  "dueDateDisplay": "Échéance:",
+  "dueDateDisplay": "Échéance :",
   "addDueDatePlaceholder": "Ajouter une date d'échéance",
 
   "undoCompleteButton": "Annuler",
@@ -30,6 +30,10 @@
 
   "languageFrench": "Français",
   "languageEnglish": "English",
-  "languageGerman": "Deutsch"
-  
+  "languageGerman": "Deutsch",
+  "languageSpanish": "Espagnol",
+  "languageItalian": "Italien",
+  "languagePortuguese": "Portugais",
+  "languageChinese": "Chinois",
+  "languageJapanese": "Japonais"
 }

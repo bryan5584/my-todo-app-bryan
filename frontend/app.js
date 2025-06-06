@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`./locales/${lang}.json`);
             if (!response.ok) {
-                throw new Error(`Failed to load translation for ${lang}`);
+                // Si le fichier de langue spécifique n'est pas trouvé, essayez le fallback
+                throw new Error(`Failed to load translation for ${lang}, trying fallback`);
             }
             translations = await response.json();
             localStorage.setItem('lang', lang);
@@ -26,9 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
             languageSelect.value = lang;
         } catch (error) {
             console.error('Error loading translations:', error);
-            // Si la langue préférée échoue, essayez l'anglais comme fallback
+            // Si la langue préférée échoue ou n'est pas trouvée, essayez l'anglais comme fallback
+            // Et s'il n'y a pas de fallback, afficher une alerte
             if (lang !== 'en') {
                 loadTranslations('en');
+            } else {
+                alert("Erreur: Impossible de charger les traductions. L'application pourrait ne pas s'afficher correctement.");
             }
         }
     }
@@ -41,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('header h1').textContent = translateText('appTitle');
         taskInput.placeholder = translateText('addTaskPlaceholder');
         dueDateInput.placeholder = translateText('dueDatePlaceholder');
-        
+
         // Traduction des options de priorité pour le formulaire d'ajout
         // Assurez-vous que ces éléments existent avant d'essayer de les traduire
         const addTaskPriorityNone = document.querySelector('#addTaskPriority option[value="Aucune"]');
@@ -52,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (addTaskPriorityMedium) addTaskPriorityMedium.textContent = translateText('priorityMedium');
         const addTaskPriorityHigh = document.querySelector('#addTaskPriority option[value="Haute"]');
         if (addTaskPriorityHigh) addTaskPriorityHigh.textContent = translateText('priorityHigh');
-        
+
         document.querySelector('#addTaskForm button[type="submit"]').textContent = translateText('addButton');
         noTasksMessage.textContent = translateText('noTasksMessage');
 
@@ -63,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.querySelector('#modal-task-description').placeholder = translateText('descriptionPlaceholder');
         modal.querySelector('label[for="modal-task-due-date"]').textContent = translateText('dueDateLabel');
         modal.querySelector('label[for="modal-task-priority"]').textContent = translateText('priorityLabel');
-        
+
         // Traduction des options de priorité pour la modale (important de les mettre à jour ici aussi)
         const modalPriorityNone = modal.querySelector('#modal-task-priority option[value="Aucune"]');
         if (modalPriorityNone) modalPriorityNone.textContent = translateText('priorityNone');
@@ -73,16 +77,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalPriorityMedium) modalPriorityMedium.textContent = translateText('priorityMedium');
         const modalPriorityHigh = modal.querySelector('#modal-task-priority option[value="Haute"]');
         if (modalPriorityHigh) modalPriorityHigh.textContent = translateText('priorityHigh');
-        
+
         saveTaskDetailsButton.textContent = translateText('saveButton');
 
         // Met à jour les options du sélecteur de langue
         languageSelect.querySelector('option[value="fr"]').textContent = translateText('languageFrench');
         languageSelect.querySelector('option[value="en"]').textContent = translateText('languageEnglish');
         languageSelect.querySelector('option[value="de"]').textContent = translateText('languageGerman');
-        // Assurez-vous que les options des autres langues existent et sont traduites si vous les gardez
-        // languageSelect.querySelector('option[value="es"]').textContent = translateText('languageSpanish');
-        // ...
+        // Ajoute ici les traductions pour les nouvelles langues (si les options existent dans HTML)
+        const languageSpanish = languageSelect.querySelector('option[value="es"]');
+        if(languageSpanish) languageSpanish.textContent = translateText('languageSpanish');
+        const languageItalian = languageSelect.querySelector('option[value="it"]');
+        if(languageItalian) languageItalian.textContent = translateText('languageItalian');
+        const languagePortuguese = languageSelect.querySelector('option[value="pt"]');
+        if(languagePortuguese) languagePortuguese.textContent = translateText('languagePortuguese');
+        const languageChinese = languageSelect.querySelector('option[value="zh"]');
+        if(languageChinese) languageChinese.textContent = translateText('languageChinese');
+        const languageJapanese = languageSelect.querySelector('option[value="ja"]');
+        if(languageJapanese) languageJapanese.textContent = translateText('languageJapanese');
+
         languageSelect.value = currentLang;
 
         fetchTasks(); // Re-rendre les tâches pour appliquer les nouvelles traductions
@@ -199,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (a.done && !b.done) return 1;
                     if (!a.done && b.done) return -1;
 
+                    // IMPORTANT: Les clés de priorité doivent être les VALEURS non traduites que le backend renvoie (ex: "Haute", "Moyenne")
                     const priorityOrder = { 'Haute': 1, 'Moyenne': 2, 'Basse': 3, 'Aucune': 4 };
                     const priorityA = priorityOrder[a.priority || 'Aucune'];
                     const priorityB = priorityOrder[b.priority || 'Aucune'];
@@ -280,11 +294,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         taskContentWrapper.appendChild(taskTextSpan);
 
-        // --- Affichage de la priorité ---
+        // --- CORRECTION AFFICHAGE DE LA PRIORITÉ ---
         const prioritySpan = document.createElement('span');
-        prioritySpan.textContent = `${translateText('priorityLabel')} ${translateText('priority' + (task.priority || 'Aucune'))}`;
+        const priorityValueFromBackend = task.priority || 'Aucune'; // "Haute", "Moyenne", "Basse", "Aucune"
+        let translatedPriorityText = '';
+
+        switch (priorityValueFromBackend) {
+            case 'Haute':
+                translatedPriorityText = translateText('priorityHigh');
+                break;
+            case 'Moyenne':
+                translatedPriorityText = translateText('priorityMedium');
+                break;
+            case 'Basse':
+                translatedPriorityText = translateText('priorityLow');
+                break;
+            case 'Aucune':
+            default:
+                translatedPriorityText = translateText('priorityNone');
+                break;
+        }
+
+        prioritySpan.textContent = `${translateText('priorityLabel')} ${translatedPriorityText}`; // Affiche "Priorité: Haute"
         prioritySpan.classList.add('task-priority');
-        prioritySpan.classList.add(`priority-${(task.priority || 'Aucune').toLowerCase()}`);
+        prioritySpan.classList.add(`priority-${priorityValueFromBackend.toLowerCase()}`); // La classe CSS utilise le format en minuscules (haute, moyenne...)
         taskContentWrapper.appendChild(prioritySpan);
 
         // LOGIQUE POUR LA DATE ET LA COULEUR
@@ -292,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dueDateContainer.classList.add('due-date-container');
 
         // CORRECTION ICI : Utilisez task.due_date qui vient du backend
-        if (task.due_date) { 
+        if (task.due_date) {
             const dueDateObj = new Date(task.due_date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -382,8 +415,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // CORRECTION ICI : Utilisez task.due_date pour remplir la modale
                 modalTaskDueDate.value = task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : '';
                 modalTaskPriority.value = task.priority || 'Aucune';
-                
+
                 // Assure que les options de la modale sont traduites lors de l'ouverture
+                // Ces lignes sont déjà bonnes, elles utilisent translateText
                 modal.querySelector('#modal-task-priority option[value="Aucune"]').textContent = translateText('priorityNone');
                 modal.querySelector('#modal-task-priority option[value="Basse"]').textContent = translateText('priorityLow');
                 modal.querySelector('#modal-task-priority option[value="Moyenne"]').textContent = translateText('priorityMedium');
@@ -408,6 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         content: content,
                         dueDate: dueDate || null, // Le backend attend 'dueDate'
+                        description: '', // Ajoute une description vide par défaut si non fournie
                         priority: priority // Inclut la priorité lors de l'ajout
                     })
                 });
