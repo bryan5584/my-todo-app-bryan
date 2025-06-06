@@ -36,13 +36,11 @@
   "languageChinese": "Chinesisch",
   "languageJapanese": "Japanisch",
   "overdueTask": "Überfällig",
-
   "sortByLabel": "Sortieren nach:",
   "sortDueDateAsc": "Fälligkeitsdatum (nächste)",
   "sortPriorityHigh": "Priorität (höchste)",
   "sortCreationDateDesc": "Erstellungsdatum (neueste)",
   "sortTitleAsc": "Titel (A-Z)",
-
   "searchPlaceholder": "Aufgabe suchen...",
   "totalTasks": "Gesamtanzahl Aufgaben",
   "pendingTasks": "Ausstehende Aufgaben",

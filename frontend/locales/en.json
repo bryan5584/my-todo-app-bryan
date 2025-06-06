@@ -36,13 +36,11 @@
   "languageChinese": "Chinese",
   "languageJapanese": "Japanese",
   "overdueTask": "Overdue",
-
   "sortByLabel": "Sort by:",
   "sortDueDateAsc": "Due Date (closest)",
   "sortPriorityHigh": "Priority (highest)",
   "sortCreationDateDesc": "Creation Date (newest)",
   "sortTitleAsc": "Title (A-Z)",
-
   "searchPlaceholder": "Search task...",
   "totalTasks": "Total Tasks",
   "pendingTasks": "Pending Tasks",

@@ -10,7 +10,6 @@
   "addButton": "Ajouter",
   "noTasksMessage": "Aucune tâche pour le moment.",
   "noSearchResults": "Aucun résultat pour cette recherche.",
-
   "taskDetailsTitle": "Détails de la tâche",
   "titleLabel": "Titre",
   "descriptionLabel": "Description",
@@ -20,16 +19,13 @@
   "saveButton": "Sauvegarder",
   "taskTitleEmptyAlert": "Le titre de la tâche ne peut pas être vide !",
   "doubleClickToEdit": "Double-cliquez pour modifier",
-
   "overdueTask": "En retard",
   "dueDateDisplay": "Échéance :",
   "addDueDatePlaceholder": "Ajouter une date d'échéance",
-
   "undoCompleteButton": "Annuler",
   "completeButton": "Terminer",
   "deleteButton": "Supprimer",
   "confirmDelete": "Voulez-vous vraiment supprimer cette tâche ?",
-
   "languageFrench": "Français",
   "languageEnglish": "English",
   "languageGerman": "Deutsch",
@@ -38,13 +34,11 @@
   "languagePortuguese": "Portugais",
   "languageChinese": "Chinois",
   "languageJapanese": "Japonais",
-
   "sortByLabel": "Trier par:",
   "sortDueDateAsc": "Date d'échéance (plus proche)",
   "sortPriorityHigh": "Priorité (la plus haute)",
   "sortCreationDateDesc": "Date de création (plus récente)",
   "sortTitleAsc": "Titre (A-Z)",
-
   "searchPlaceholder": "Rechercher une tâche...",
   "totalTasks": "Tâches totales",
   "pendingTasks": "Tâches en attente",

@@ -1,5 +1,3 @@
-// Code JavaScript pour le front-end de l'application To-Do List (avec i18n, modale d'édition, tri, recherche et compteurs)
-
 document.addEventListener('DOMContentLoaded', () => {
     const addTaskForm = document.getElementById('addTaskForm');
     const taskInput = document.querySelector('#addTaskForm input[type="text"]');
@@ -9,16 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const noTasksMessage = document.getElementById('noTasksMessage');
     const languageSelect = document.getElementById('language-select');
     const sortSelect = document.getElementById('sort-select'); 
-    const searchInput = document.getElementById('searchInput'); // NOUVEAU: Barre de recherche
-    const totalTasksSpan = document.getElementById('totalTasks'); // NOUVEAU: Compteur total
-    const pendingTasksSpan = document.getElementById('pendingTasks'); // NOUVEAU: Compteur en attente
-    const completedTasksSpan = document.getElementById('completedTasks'); // NOUVEAU: Compteur terminé
+    const searchInput = document.getElementById('searchInput'); 
+    const totalTasksSpan = document.getElementById('totalTasks'); 
+    const pendingTasksSpan = document.getElementById('pendingTasks'); 
+    const completedTasksSpan = document.getElementById('completedTasks'); 
 
     let translations = {};
     let currentLang = localStorage.getItem('lang') || 'fr';
-    let allTasks = []; // Stocke toutes les tâches pour le filtrage local
-
-    // --- FONCTIONS D'INTERNATIONALISATION ---
+    let allTasks = [];
 
     async function loadTranslations(lang) {
         try {
@@ -29,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             translations = await response.json();
             localStorage.setItem('lang', lang);
             applyTranslations();
+            fetchTasks(); 
             languageSelect.value = lang;
         } catch (error) {
             console.error('Error loading translations:', error);
@@ -49,13 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
         taskInput.placeholder = translateText('addTaskPlaceholder');
         dueDateInput.placeholder = translateText('dueDatePlaceholder');
 
-        // Traduction de l'option placeholder pour la priorité
         const addTaskPriorityPlaceholder = document.querySelector('#addTaskPriority option[value=""]'); 
         if (addTaskPriorityPlaceholder) {
             addTaskPriorityPlaceholder.textContent = translateText('priorityPlaceholder');
         }
         
-        // Traduction des options de priorité pour le formulaire d'ajout
         const addTaskPriorityNone = document.querySelector('#addTaskPriority option[value="Aucune"]');
         if (addTaskPriorityNone) addTaskPriorityNone.textContent = translateText('priorityNone');
         const addTaskPriorityLow = document.querySelector('#addTaskPriority option[value="Basse"]');
@@ -68,17 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#addTaskForm button[type="submit"]').textContent = translateText('addButton');
         noTasksMessage.textContent = translateText('noTasksMessage');
 
-        // Traduction des options de tri
         document.querySelector('label[for="sort-select"]').textContent = translateText('sortByLabel');
         document.querySelector('#sort-select option[value="dueDateAsc"]').textContent = translateText('sortDueDateAsc');
         document.querySelector('#sort-select option[value="priorityHigh"]').textContent = translateText('sortPriorityHigh');
         document.querySelector('#sort-select option[value="creationDateDesc"]').textContent = translateText('sortCreationDateDesc');
         document.querySelector('#sort-select option[value="titleAsc"]').textContent = translateText('sortTitleAsc');
 
-        // Traduction du placeholder de recherche (NOUVEAU)
         searchInput.placeholder = translateText('searchPlaceholder');
 
-        // Modale
         modal.querySelector('h2').textContent = translateText('taskDetailsTitle');
         modal.querySelector('label[for="modal-task-title"]').textContent = translateText('titleLabel');
         modal.querySelector('label[for="modal-task-description"]').textContent = translateText('descriptionLabel');
@@ -86,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.querySelector('label[for="modal-task-due-date"]').textContent = translateText('dueDateLabel');
         modal.querySelector('label[for="modal-task-priority"]').textContent = translateText('priorityLabel');
 
-        // Traduction des options de priorité pour la modale
         const modalPriorityNone = modal.querySelector('#modal-task-priority option[value="Aucune"]');
         if (modalPriorityNone) modalPriorityNone.textContent = translateText('priorityNone');
         const modalPriorityLow = modal.querySelector('#modal-task-priority option[value="Basse"]');
@@ -98,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveTaskDetailsButton.textContent = translateText('saveButton');
 
-        // Met à jour les options du sélecteur de langue
         languageSelect.querySelector('option[value="fr"]').textContent = translateText('languageFrench');
         languageSelect.querySelector('option[value="en"]').textContent = translateText('languageEnglish');
         languageSelect.querySelector('option[value="de"]').textContent = translateText('languageGerman');
@@ -115,8 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         languageSelect.value = currentLang;
 
-        updateTaskCounters(allTasks); // Met à jour les compteurs avec les traductions
-        renderTasks(allTasks); // Re-rendre les tâches pour appliquer les nouvelles traductions et le tri
+        updateTaskCounters(allTasks);
+        renderTasks(allTasks);
     }
 
     languageSelect.addEventListener('change', (e) => {
@@ -125,17 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     sortSelect.addEventListener('change', () => { 
-        renderTasks(allTasks); // Applique le tri sur les tâches déjà chargées
+        renderTasks(allTasks);
     });
 
-    searchInput.addEventListener('input', () => { // NOUVEAU: Écouteur pour la recherche
-        renderTasks(allTasks); // Re-rend les tâches filtrées et triées
+    searchInput.addEventListener('input', () => {
+        renderTasks(allTasks);
     });
 
-    // --- FIN FONCTIONS D'INTERNATIONALISATION ---
-
-
-    // --- ÉLÉMENTS DE LA MODALE ---
     const modal = document.createElement('div');
     modal.classList.add('modal');
     modal.innerHTML = `
@@ -211,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 if (response.ok) {
                     modal.style.display = 'none';
-                    fetchTasks(); // Recharge et re-rend les tâches
+                    fetchTasks();
                 } else {
                     console.error('Erreur lors de la mise à jour des détails de la tâche:', response.statusText);
                 }
@@ -221,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // NOUVEAU: Fonction pour mettre à jour les compteurs
     function updateTaskCounters(tasks) {
         const total = tasks.length;
         const pending = tasks.filter(task => !task.done).length;
@@ -232,25 +217,22 @@ document.addEventListener('DOMContentLoaded', () => {
         completedTasksSpan.textContent = `${translateText('completedTasks')}: ${completed}`;
     }
 
-    // Fonction pour charger et afficher les tâches (MODIFIÉE POUR LE TRI ET LA RECHERCHE)
     async function fetchTasks() {
         try {
             const response = await fetch('/api/tasks');
-            allTasks = await response.json(); // Stocke toutes les tâches brutes
-            renderTasks(allTasks); // Appelle renderTasks avec toutes les tâches pour filtrage/tri/affichage
+            allTasks = await response.json(); 
+            renderTasks(allTasks);
         } catch (error) {
             console.error('Erreur lors de la récupération des tâches:', error);
             noTasksMessage.style.display = 'block';
             noTasksMessage.textContent = translateText('noTasksMessage');
-            updateTaskCounters([]); // Met à jour les compteurs même en cas d'erreur
+            updateTaskCounters([]);
         }
     }
 
-    // NOUVEAU: Fonction pour rendre les tâches après filtrage et tri
     function renderTasks(tasksToRender) {
-        let filteredAndSortedTasks = [...tasksToRender]; // Copie pour ne pas modifier l'original
+        let filteredAndSortedTasks = [...tasksToRender];
 
-        // 1. Filtrage par recherche
         const searchTerm = searchInput.value.toLowerCase().trim();
         if (searchTerm) {
             filteredAndSortedTasks = filteredAndSortedTasks.filter(task => 
@@ -259,10 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         }
 
-        // 2. Tri
         const sortBy = sortSelect.value; 
         filteredAndSortedTasks.sort((a, b) => {
-            // Les tâches terminées vont toujours à la fin
             if (a.done && !b.done) return 1;
             if (!a.done && b.done) return -1;
 
@@ -291,14 +271,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 default:
                     break;
             }
-            return a.id - b.id; // Fallback par ID pour la stabilité
+            return a.id - b.id;
         });
 
-        taskList.innerHTML = ''; // Vide la liste actuelle
+        taskList.innerHTML = '';
 
         if (filteredAndSortedTasks.length === 0) {
             noTasksMessage.style.display = 'block';
-            // Modifier le message si c'est dû à la recherche ou au filtre
             noTasksMessage.textContent = searchTerm ? translateText('noSearchResults') : translateText('noTasksMessage');
         } else {
             noTasksMessage.style.display = 'none';
@@ -306,10 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderTask(task);
             });
         }
-        updateTaskCounters(tasksToRender); // Les compteurs sont basés sur TOUTES les tâches, pas seulement les filtrées/triées
+        updateTaskCounters(tasksToRender);
     }
 
-    // Fonction pour afficher une tâche individuelle (inchangée, mais sera appelée par renderTasks)
     function renderTask(task) {
         const li = document.createElement('li');
         li.dataset.id = task.id;
@@ -513,6 +491,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialisation : charge les traductions et les tâches au démarrage
     loadTranslations(currentLang);
 });
