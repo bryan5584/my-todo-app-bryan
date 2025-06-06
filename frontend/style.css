@@ -1,110 +1,208 @@
-/* Variables CSS pour faciliter les changements de couleur */
 :root {
-    --primary-color: #007bff; /* Bleu standard */
-    --primary-dark: #0056b3;  /* Bleu foncé */
-    --success-color: #28a745; /* Vert pour "Fait" */
-    --danger-color: #dc3545;  /* Rouge pour "Supprimer" */
-    --light-gray: #f4f4f4;    /* Fond léger */
-    --medium-gray: #e9ecef;   /* Fond des items de liste */
-    --text-color: #333;       /* Couleur de texte principale */
-    --subtle-text: #6c757d;   /* Texte barré/discret */
-    --border-color: #ddd;     /* Bordure des inputs */
-    --modal-bg: rgba(0,0,0,0.5); /* Fond de la modale */
-    --modal-content-bg: #fff; /* Fond du contenu de la modale */
-
-    /* Couleurs de priorité */
-    --priority-haute: #ff4d4d; /* Rouge vif */
-    --priority-moyenne: #ffc107; /* Jaune/Orange */
-    --priority-basse: #17a2b8; /* Bleu-vert */
-    --priority-aucune: var(--subtle-text); /* Gris */
+    --primary-color: #4CAF50;
+    --primary-dark: #388E3C;
+    --accent-color: #007bff;
+    --accent-dark: #0056b3;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --light-bg: #f9f9f9;
+    --medium-bg: #ffffff;
+    --dark-text: #333333;
+    --subtle-text: #6c757d;
+    --border-color: #e0e0e0;
+    --modal-overlay-bg: rgba(0,0,0,0.6);
+    --modal-content-bg: #ffffff;
+    --shadow-light: 0 2px 5px rgba(0,0,0,0.08);
+    --shadow-medium: 0 5px 15px rgba(0,0,0,0.1);
+    --priority-haute: #EF5350;
+    --priority-moyenne: #FFC107;
+    --priority-basse: #2196F3;
+    --priority-aucune: var(--subtle-text);
 }
 
-/* Basic CSS pour le style de l'application */
 body {
-    font-family: 'Roboto', Arial, sans-serif;
+    font-family: 'Inter', 'Roboto', Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: var(--light-gray);
-    color: var(--text-color);
+    background-color: var(--light-bg);
+    color: var(--dark-text);
     line-height: 1.6;
-}
-
-.container {
-    max-width: 600px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
     text-align: center;
     margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--medium-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1 {
     color: var(--primary-dark);
-    margin-top: 0;
-    font-size: 2.2em;
+    margin: 0 0 15px 0;
+    font-size: 2.5em;
+    font-weight: 700;
 }
 
-/* Sélecteur de langue */
+.language-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
 #language-select {
     padding: 8px 12px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.9em;
-    margin-bottom: 20px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 150px;
-    text-align: center;
+    appearance: none;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-
-form {
-    display: flex;
-    margin-bottom: 25px;
-    gap: 10px;
-    flex-wrap: wrap;
+#language-select:hover {
+    border-color: var(--accent-color);
 }
 
-form input[type="text"],
-form input[type="date"],
-form select { /* Ajout du select pour le style du formulaire d'ajout */
+#language-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: var(--medium-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow-medium);
     flex-grow: 1;
+}
+
+#addTaskForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+    background-color: var(--light-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#addTaskForm input[type="text"],
+#addTaskForm input[type="date"],
+#addTaskForm select {
+    flex: 1 1 200px;
     padding: 12px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1em;
     outline: none;
-    transition: border-color 0.3s ease;
-    min-width: 150px;
+    transition: all 0.3s ease;
+    background-color: white;
 }
 
-form input[type="text"]:focus,
-form input[type="date"]:focus,
-form select:focus { /* Ajout du select pour le focus */
-    border-color: var(--primary-color);
+#addTaskForm input[type="text"]:focus,
+#addTaskForm input[type="date"]:focus,
+#addTaskForm select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
-form button {
-    padding: 12px 20px;
+#addTaskForm button {
+    padding: 12px 25px;
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.05em;
+    font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0;
 }
 
-form button:hover {
+#addTaskForm button:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+.controls-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+}
+
+.filters, .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filters label, .search-bar label {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.search-bar input[type="text"] {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1em;
+    flex-grow: 1;
+    min-width: 150px;
+    transition: all 0.3s ease;
+}
+
+.search-bar input[type="text"]:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.task-counters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+}
+
+.task-counters span {
+    font-weight: 600;
+    color: var(--subtle-text);
+    font-size: 1em;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #eceff1;
+}
+
+#totalTasks { color: #3F51B5; }
+#pendingTasks { color: #FF9800; }
+#completedTasks { color: var(--success-color); }
+
 
 ul {
     list-style: none;
@@ -112,26 +210,33 @@ ul {
 }
 
 li {
-    background: var(--medium-gray);
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
+    background: var(--medium-bg);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer; /* Indique que le LI entier est cliquable */
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+    cursor: pointer;
 }
 
 li:hover {
-    background-color: #e0e4e8;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-3px);
 }
 
 li.done {
     text-decoration: line-through;
     color: var(--subtle-text);
-    background-color: #f0f0f0;
+    background-color: #f0f4f7;
+    border-left: 5px solid var(--success-color);
+    opacity: 0.8;
+}
+
+li:not(.done) {
+    border-left: 5px solid var(--primary-color);
 }
 
 li.done .actions button.complete {
@@ -141,116 +246,95 @@ li.done .actions button.complete {
 
 .task-content {
     flex-grow: 1;
-    margin-right: 10px;
+    margin-right: 15px;
     word-break: break-word;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-/* Style pour le texte de la tâche */
 .task-content .task-text {
-    font-size: 1.1em;
-    font-weight: bold;
+    font-size: 1.2em;
+    font-weight: 700;
     margin-bottom: 5px;
+    color: var(--dark-text);
+    padding: 2px 0;
 }
 
-/* NOUVEAU: Style pour l'affichage de la priorité */
-.task-content .task-priority {
-    font-size: 0.8em;
-    font-style: italic;
-    font-weight: bold;
-    margin-bottom: 3px;
-    padding: 2px 6px;
+.task-content .task-text[contenteditable="true"] {
+    border: 1px dashed var(--border-color);
+    padding: 2px 5px;
     border-radius: 4px;
-    display: inline-block;
 }
 
-.task-content .priority-haute {
-    background-color: var(--priority-haute);
+.task-content .task-priority {
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
     color: white;
 }
-.task-content .priority-moyenne {
-    background-color: var(--priority-moyenne);
-    color: var(--text-color);
-}
-.task-content .priority-basse {
-    background-color: var(--priority-basse);
-    color: white;
-}
-.task-content .priority-aucune {
-    background-color: var(--medium-gray);
-    color: var(--subtle-text);
-}
+
+.task-content .priority-haute { background-color: var(--priority-haute); }
+.task-content .priority-moyenne { background-color: var(--priority-moyenne); color: var(--dark-text); }
+.task-content .priority-basse { background-color: var(--priority-basse); }
+.task-content .priority-aucune { background-color: var(--subtle-text); }
+
 
 .due-date-container {
     margin-top: 5px;
+    font-size: 0.9em;
+    color: var(--subtle-text);
 }
 
 .due-date {
-    font-size: 0.85em;
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-weight: bold;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
     display: inline-block;
 }
 
-/* --- NOUVEAUX STYLES POUR LES COULEURS DE DATES --- */
-
-/* Tâche en retard (ROUGE) */
 .due-date.overdue {
-    background-color: #ffe0e0;
-    color: #cc0000;
-    border: 1px solid #cc0000;
+    background-color: #FFEBEE;
+    color: #C62828;
+    border: 1px solid #C62828;
 }
 
-/* Tâche dont l'échéance est proche (ORANGE/JAUNE) */
 .due-date.soon-due {
-    background-color: #fffacd;
-    color: #e68a00;
-    border: 1px solid #e68a00;
+    background-color: #FFF3E0;
+    color: #EF6C00;
+    border: 1px solid #EF6C00;
 }
 
-/* Tâche dont l'échéance est lointaine (VERT) */
 .due-date.long-term {
-    background-color: #e0ffe0;
-    color: #009900;
-    border: 1px solid #009900;
-}
-/* --- FIN NOUVEAUX STYLES --- */
-
-/* Style pour l'input de date quand il est en mode modification (dans la modale) */
-.task-content .due-date-container input[type="date"] {
-    border: 1px solid var(--border-color);
-    padding: 5px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    width: 180px;
-    box-sizing: border-box;
-    margin-top: 3px;
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #2E7D32;
 }
 
-/* Style pour le placeholder d'ajout de date */
 .add-date-placeholder {
     font-size: 0.85em;
-    color: var(--primary-color);
+    color: var(--accent-color);
     font-style: italic;
     text-decoration: underline;
     margin-top: 5px;
     cursor: pointer;
+    display: inline-block;
 }
-
 
 .actions button {
     background-color: var(--danger-color);
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 10px 15px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9em;
-    margin-left: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-left: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    font-weight: 600;
 }
 
 .actions button.complete {
@@ -259,19 +343,20 @@ li.done .actions button.complete {
 
 .actions button:hover {
     transform: translateY(-1px);
-    opacity: 0.9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Styles pour le message "Pas de tâches" (si activé par JS) */
 #noTasksMessage {
     text-align: center;
     color: var(--subtle-text);
-    margin-top: 20px;
+    margin-top: 30px;
     font-style: italic;
-    font-size: 0.95em;
+    font-size: 1.1em;
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
 }
 
-/* --- STYLES POUR LA MODALE (FENÊTRE POP-UP) --- */
 .modal {
     display: none;
     position: fixed;
@@ -281,261 +366,209 @@ li.done .actions button.complete {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: var(--modal-bg);
-    padding-top: 60px;
-}
-
-.modal-content {
-    background-color: var(--modal-content-bg);
-    margin: 5% auto;
-    padding: 30px;
-    border: 1px solid #888;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-.modal-content h2 {
-    text-align: center;
-    color: var(--primary-dark);
-    margin-top: 0;
-    margin-bottom: 25px;
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 32px;
-    font-weight: bold;
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    cursor: pointer;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: #333;
-    text-decoration: none;
-}
-
-.task-detail-item {
-    margin-bottom: 15px;
+    background-color: var(--modal-overlay-bg);
     display: flex;
-    flex-direction: column;
-}
-
-.task-detail-item label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: var(--text-color);
-}
-
-.modal-content .editable-field {
-    width: calc(100% - 22px);
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    font-size: 1em;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-}
-
-.modal-content .editable-field:focus {
-    border-color: var(--primary-color);
-    outline: none;
-}
-
-.modal-content textarea {
-    resize: vertical;
-    min-height: 60px;
-}
-
-.modal-content .save-button {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.1em;
-    margin-top: 20px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.modal-content .save-button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-/* Styles pour le sélecteur de priorité dans le formulaire d'ajout */
-#addTaskForm select {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 10px;
-    flex-shrink: 0; /* Empêche le sélecteur de se rétrécir */
-}
-
-/* Styles pour l'affichage de la priorité dans la liste des tâches */
-.task-priority {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    margin-left: 10px;
-    font-weight: bold;
-    color: white;
-}
-
-.priority-aucune {
-    background-color: #6c757d; /* Gris */
-}
-
-.priority-basse {
-    background-color: #28a745; /* Vert */
-}
-
-.priority-moyenne {
-    background-color: #ffc107; /* Jaune */
-    color: #333; /* Texte plus sombre pour le jaune */
-}
-
-.priority-haute {
-    background-color: #dc3545; /* Rouge */
-}
-
-/* Styles pour la modale */
-.modal {
-    display: none; /* Caché par défaut */
-    position: fixed; /* Reste en place même en scrollant */
-    z-index: 1000; /* Plus haut que tout le reste */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Permet de scroller si le contenu est trop grand */
-    background-color: rgba(0,0,0,0.4); /* Fond semi-transparent */
-    display: flex; /* Utilise flexbox pour centrer */
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: auto; /* Centrage */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Largeur de la modale */
-    max-width: 500px; /* Largeur maximale pour éviter qu'elle soit trop grande */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: var(--modal-content-bg);
+    margin: 20px;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: var(--shadow-medium);
     position: relative;
-    box-sizing: border-box; /* Inclut padding et border dans la largeur/hauteur */
+    box-sizing: border-box;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+    color: #999;
+    font-size: 36px;
     font-weight: bold;
     position: absolute;
     top: 10px;
-    right: 15px;
+    right: 20px;
     cursor: pointer;
+    transition: color 0.3s ease;
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+    color: var(--danger-color);
 }
 
 .modal-content h2 {
     margin-top: 0;
-    color: #333;
-    font-size: 1.5em;
+    color: var(--primary-dark);
+    font-size: 1.8em;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
 }
 
 .task-detail-item {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .task-detail-item label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark-text);
+    font-size: 1em;
 }
 
-.modal-content input[type="text"],
-.modal-content input[type="date"],
-.modal-content textarea,
-.modal-content select {
+.modal-content .editable-field {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Très important pour que la largeur 100% fonctionne */
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background-color: #fefefe;
+}
+
+.modal-content .editable-field:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
 }
 
 .modal-content textarea {
-    resize: vertical; /* Permet de redimensionner verticalement */
+    resize: vertical;
+    min-height: 80px;
 }
 
 .save-button {
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
-    padding: 10px 20px;
+    padding: 15px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1em;
-    display: block; /* Prend toute la largeur */
+    font-size: 1.1em;
+    font-weight: 600;
+    display: block;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 30px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .save-button:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Styles pour la date d'échéance dans la liste */
-.due-date-container {
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    color: var(--subtle-text);
     font-size: 0.9em;
-    margin-left: 10px;
-    flex-shrink: 0;
+    background-color: var(--medium-bg);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    border-radius: 10px 10px 0 0;
 }
 
-.due-date {
-    font-weight: bold;
-    margin-left: 5px;
-}
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
 
-.overdue {
-    color: #dc3545; /* Rouge pour les tâches en retard */
-    font-weight: bold;
-}
+    main {
+        margin: 15px auto;
+        padding: 20px;
+    }
 
-.soon-due {
-    color: #ffc107; /* Jaune pour les tâches bientôt dues */
-    font-weight: bold;
-}
+    h1 {
+        font-size: 2em;
+    }
 
-.long-term {
-    color: #28a745; /* Vert pour les tâches à long terme */
-}
+    #addTaskForm {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-.add-date-placeholder {
-    color: #999;
-    font-style: italic;
-    cursor: pointer;
+    #addTaskForm input[type="text"],
+    #addTaskForm input[type="date"],
+    #addTaskForm select,
+    #addTaskForm button {
+        width: 100%;
+        min-width: unset;
+        flex: unset;
+    }
+
+    .controls-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters, .search-bar {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters label, .search-bar label {
+        align-self: flex-start;
+        margin-bottom: 5px;
+    }
+
+    .search-bar input[type="text"] {
+        width: 100%;
+    }
+
+    .task-counters {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .task-content {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 10px;
+    }
+
+    .actions button {
+        margin-left: 5px;
+        padding: 8px 12px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .close-button {
+        font-size: 30px;
+        top: 8px;
+        right: 15px;
+    }
 }
